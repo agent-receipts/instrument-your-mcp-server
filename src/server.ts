@@ -1,6 +1,6 @@
-// The ice cream truck at the end of step 1: rate limiting, nothing else.
+// The ice cream truck at the end of step 2: rate limiting and an audit trail.
 //
-// `npm run catchup 1` copies this over src/server.ts. The finished server,
+// `npm run catchup 2` copies this over src/server.ts. The finished server,
 // with all of steps 0 to 5, is solution/server.ts.
 
 import { appendFileSync, mkdirSync } from "node:fs";
@@ -19,6 +19,7 @@ import { ToolGuard } from "../src/toolGuard.js";
 import { allowAll } from "../src/allowAll.js";
 
 import { FixedWindowRateLimitStore } from "./rateLimit.js";
+import { JsonlAuditSink, redactShopParams } from "./auditLog.js";
 
 const shop = new Shop();
 
@@ -29,6 +30,11 @@ const guard = new ToolGuard({
   // Step 1 — 30 calls per caller per minute.
   rateLimit: 30,
   rateLimitStore: new FixedWindowRateLimitStore(60_000),
+
+  // Step 2 — write every decision down, denials included, with secrets
+  // stripped before they reach the file.
+  auditSink: new JsonlAuditSink("var/audit.jsonl"),
+  redact: redactShopParams,
 
   responseScanner: null,
 });
@@ -71,9 +77,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
 
   try {
     const text = dispatch(shop, name, params);
+    await guard.guardToolResponse(agentId, name, text);
     return { content: [{ type: "text", text }] };
   } catch (err: unknown) {
     if (err instanceof ShopError) {
+      await guard.guardToolResponse(agentId, name, `error: ${err.message}`);
       return { content: [{ type: "text", text: err.message }], isError: true };
     }
     throw err;
@@ -81,7 +89,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
 });
 
 async function main(): Promise<void> {
-  await serveHttp(server, "scoop-truck (step 1: rate limit)");
+  await serveHttp(server, "scoop-truck (step 2: rate limit, audit trail)");
+  console.error("  audit log  var/audit.jsonl");
 }
 
 main().catch((err: unknown) => {
