@@ -1,6 +1,7 @@
-// The ice cream truck at the end of step 2: rate limiting and an audit trail.
+// The ice cream truck at the end of step 3: rate limiting and a signed receipt
+// chain.
 //
-// `npm run catchup 2` copies this over src/server.ts. The finished server,
+// `npm run catchup 3` copies this over src/server.ts. The finished server,
 // with all of steps 0 to 5, is solution/server.ts.
 
 import { appendFileSync, mkdirSync } from "node:fs";
@@ -19,9 +20,16 @@ import { ToolGuard } from "../src/toolGuard.js";
 import { allowAll } from "../src/allowAll.js";
 
 import { FixedWindowRateLimitStore } from "./rateLimit.js";
-import { JsonlAuditSink, redactShopParams } from "./auditLog.js";
+import { redactShopParams } from "./auditLog.js";
+import { ReceiptAuditSink } from "./receipts.js";
+
+const RECEIPT_LOG = "var/receipts.jsonl";
 
 const shop = new Shop();
+
+// Step 3 — the audit sink signs. Same interface as step 2's JsonlAuditSink,
+// so this is the only line that changed.
+const audit = new ReceiptAuditSink(RECEIPT_LOG);
 
 const guard = new ToolGuard({
   // The real policy is step 4.
@@ -31,9 +39,9 @@ const guard = new ToolGuard({
   rateLimit: 30,
   rateLimitStore: new FixedWindowRateLimitStore(60_000),
 
-  // Step 2 — write every decision down, denials included, with secrets
-  // stripped before they reach the file.
-  auditSink: new JsonlAuditSink("var/audit.jsonl"),
+  // Steps 2 and 3 — every decision written down, now as signed receipts,
+  // with secrets stripped first.
+  auditSink: audit,
   redact: redactShopParams,
 
   responseScanner: null,
@@ -89,8 +97,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
 });
 
 async function main(): Promise<void> {
-  await serveHttp(server, "scoop-truck (step 2: rate limit, audit trail)");
-  console.error("  audit log  var/audit.jsonl");
+  await serveHttp(server, "scoop-truck (step 3: rate limit, signed receipts)");
+  console.error(`  signing as ${audit.did}`);
+  console.error(`  receipts   ${RECEIPT_LOG}`);
 }
 
 main().catch((err: unknown) => {
