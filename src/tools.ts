@@ -1,10 +1,11 @@
-// Tool definitions and dispatch for the ice cream truck.
+// Tool definitions and dispatch for the ice cream truck, with each tool's
+// MCP annotations filled in (step 0).
 //
 // Separated from server.ts on purpose: server.ts is the file the workshop
 // edits (it holds the one handler where instrumentation goes), so the tool
 // list stays out of the way. Nothing in here knows about ToolGuard.
 
-import { Shop, ShopError } from "./shop.js";
+import { Shop, ShopError } from "../src/shop.js";
 
 export interface ToolDefinition {
   name: string;
@@ -26,16 +27,21 @@ export interface ToolDefinition {
   };
 }
 
+const READ_ONLY = { readOnlyHint: true, openWorldHint: false };
+const CHANGES_STATE = { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false };
+const DESTRUCTIVE = { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false };
 
 export const TOOLS: ToolDefinition[] = [
   {
     name: "list_flavors",
+    annotations: READ_ONLY,
     description:
       "List every flavor on the truck with its description, price per scoop and how many scoops are left.",
     inputSchema: { type: "object", properties: {} },
   },
   {
     name: "check_inventory",
+    annotations: READ_ONLY,
     description: "Check how many scoops of one flavor are left.",
     inputSchema: {
       type: "object",
@@ -47,6 +53,7 @@ export const TOOLS: ToolDefinition[] = [
   },
   {
     name: "place_order",
+    annotations: CHANGES_STATE,
     description: "Place an order for one or more scoops of a single flavor.",
     inputSchema: {
       type: "object",
@@ -60,6 +67,7 @@ export const TOOLS: ToolDefinition[] = [
   },
   {
     name: "apply_discount_code",
+    annotations: CHANGES_STATE,
     description:
       "Apply a promotional discount code to an existing order. Codes look like SCOOP-1234.",
     inputSchema: {
@@ -73,6 +81,7 @@ export const TOOLS: ToolDefinition[] = [
   },
   {
     name: "issue_refund",
+    annotations: DESTRUCTIVE,
     description: "Refund money against an existing order.",
     inputSchema: {
       type: "object",
@@ -86,6 +95,7 @@ export const TOOLS: ToolDefinition[] = [
   },
   {
     name: "comp_free_scoop",
+    annotations: DESTRUCTIVE,
     description:
       "Give a customer a free scoop on the house, e.g. to make up for a bad experience.",
     inputSchema: {
@@ -100,6 +110,7 @@ export const TOOLS: ToolDefinition[] = [
   },
   {
     name: "blast_promo_sms",
+    annotations: { ...DESTRUCTIVE, openWorldHint: true },
     description:
       "Text a promotional message to the marketing list. Sends immediately and cannot be recalled.",
     inputSchema: {

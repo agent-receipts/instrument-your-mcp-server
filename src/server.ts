@@ -1,18 +1,8 @@
-// The ice cream truck MCP server — uninstrumented.
+// The ice cream truck at the end of step 0: still uninstrumented, but its
+// tools now say what they do (MCP annotations, in solution/tools.ts).
 //
-// This is the workshop's starting point: a perfectly ordinary MCP server that
-// someone shipped on a deadline. It works. It has no rate limiting, no audit
-// trail, no signed receipts, and no policy check. An agent that can reach it
-// can refund any amount against any order, brute-force the discount code, and
-// text twelve thousand people. Nothing here is a trick question — this is what
-// most MCP servers look like today.
-//
-// Everything part one adds goes in ONE place: the CallToolRequestSchema
-// handler below. That's the whole argument for instrumenting in-process
-// rather than proxying — you already own the choke point.
-//
-// Run it:  npm run server          (HTTP on 127.0.0.1, behind OAuth)
-// Poke it: npm run hammer          (brute-forces the discount code)
+// `npm run catchup 0` copies this over src/server.ts. The finished server,
+// with all of steps 0 to 5, is solution/server.ts.
 
 import { appendFileSync, mkdirSync } from "node:fs";
 
@@ -23,8 +13,8 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-import { Shop, ShopError } from "./shop.js";
-import { serveHttp } from "./http.js";
+import { Shop, ShopError } from "../src/shop.js";
+import { serveHttp } from "../src/http.js";
 import { TOOLS, dispatch } from "./tools.js";
 
 const shop = new Shop();
