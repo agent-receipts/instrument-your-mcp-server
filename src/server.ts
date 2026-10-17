@@ -1,8 +1,15 @@
-// The ice cream truck at the end of step 4: rate limiting, a signed receipt
-// chain, and a policy that reads the arguments.
+// The ice cream truck MCP server — instrumented.
 //
-// `npm run catchup 4` copies this over src/server.ts. The finished server,
-// with all of steps 0 to 5, is solution/server.ts.
+// Same server as src/server.ts. Same tools, same business logic, same one
+// handler. The diff between the two files is the whole of part one:
+//
+//   git diff --no-index src/server.ts solution/server.ts
+//
+// Try it yourself in src/server.ts before reading this.
+//
+// Run it:    npm run server:solution
+// Attack it: npm run hammer -- solution/server.ts
+// Audit it:  npm run verify
 
 import { appendFileSync, mkdirSync } from "node:fs";
 
@@ -22,6 +29,7 @@ import { FixedWindowRateLimitStore } from "./rateLimit.js";
 import { redactShopParams } from "./auditLog.js";
 import { ReceiptAuditSink } from "./receipts.js";
 import { createShopPolicy } from "./policy.js";
+import { PromptInjectionScanner } from "./responseScan.js";
 
 const RECEIPT_LOG = "var/receipts.jsonl";
 
@@ -70,12 +78,13 @@ const guard = new ToolGuard({
   auditSink: audit,
   redact: redactShopParams,
 
-  // Response-side scanning is left off here (`null` disables it). The truck
-  // returns its own text and there's no untrusted content flowing back
-  // through it, so a scanner would be theatre. Turn it on when a tool
-  // returns something you didn't author — a web fetch, a database row
-  // someone else wrote, a support ticket body.
-  responseScanner: null,
+  // Step 5 — check what goes back to the model, not only what comes in.
+  // The menu includes a supplier's text nobody here wrote, and a tool's
+  // output is just more input to the model. "sanitize" drops the offending
+  // sentence and keeps the menu; "block" would hide the whole menu because
+  // of one flavour.
+  responseScanner: new PromptInjectionScanner(),
+  responsePolicy: "sanitize",
 });
 
 // Logging, the way it usually gets added: one line per call, to a file, so
@@ -160,9 +169,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
     // Record the outcome too, not just the permission. Without this the
     // receipt chain says what was allowed to run, never what it did — and
     // "allowed" is not the same claim as "succeeded".
-    await guard.guardToolResponse(agentId, name, text, correlationId);
+    //
+    // Step 5: the guard also scans the text on its way back to the model.
+    // Send what it returns, not what dispatch produced.
+    const response = await guard.guardToolResponse(agentId, name, text, correlationId);
+    if (!response.allowed) {
+      return { content: [{ type: "text", text: `Withheld: ${response.reason}` }], isError: true };
+    }
 
-    return { content: [{ type: "text", text }] };
+    return { content: [{ type: "text", text: response.content ?? "" }] };
   } catch (err: unknown) {
     if (err instanceof ShopError) {
       await guard.guardToolResponse(agentId, name, `error: ${err.message}`, correlationId);
