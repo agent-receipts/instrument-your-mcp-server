@@ -1,0 +1,38 @@
+{
+  "name": "scoop-truck",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ice cream truck MCP server — the demo target for the \"Instrument your MCP server\" workshop",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "server": "tsx src/server.ts",
+    "server:solution": "tsx solution/server.ts",
+    "hammer": "tsx examples/hammer.ts",
+    "heist": "tsx examples/heist.ts",
+    "menu": "tsx examples/menu.ts",
+    "client": "tsx examples/client.ts",
+    "chat": "tsx examples/chat.ts",
+    "walkthrough": "tsx examples/guard-walkthrough.ts",
+    "verify": "tsx solution/verify.ts",
+    "forge": "tsx examples/forge.ts",
+    "typecheck": "tsc --noEmit",
+    "catchup": "tsx workshop/catchup.ts",
+    "check": "tsx workshop/check.ts",
+    "preflight": "tsx workshop/preflight.ts",
+    "probe": "tsx examples/probe.ts",
+    "join": "tsx stacking/join.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "@obsigna/sdk-ts": "^0.17.0"
+  }
+}

@@ -1,0 +1,60 @@
+# Pipelock config for the stacked demo: a proxy in front of the already
+# instrumented scoop truck. Verified against pipelock v3.5.0 (stdio) and
+# v3.7.0 (HTTP reverse proxy, the current setup).
+#
+# Setup (once):
+#   export PIPELOCK_HOME=$PWD/stacking/plhome
+#   pipelock keygen scoop-mediator
+#
+# Run the stack. The demo script starts the server, then pipelock with
+# `--listen 127.0.0.1:<port> --upstream <server url>` appended, and connects
+# through it with a token from the server's own OAuth endpoints:
+#   npm run heist  -- --via pipelock mcp proxy --config stacking/pipelock.yaml -- npx tsx solution/server.ts
+#   npm run hammer -- --via pipelock mcp proxy --config stacking/pipelock.yaml -- npx tsx solution/server.ts
+#
+# Read the two chains afterwards — they do not say the same thing, but with
+# the envelope on they can at least be joined:
+#   npm run verify                                    # the server's chain
+#   pipelock verify-receipt --chain stacking/evidence \
+#     --key "$PIPELOCK_HOME/agents/scoop-mediator/id_ed25519.pub"
+#
+# Paths below are relative to the project folder (the one with package.json). Replace <ABS> with an absolute
+# path if you run pipelock from elsewhere — it does not resolve these against
+# the config file's own location.
+
+mode: balanced
+
+# Writes pipelock's mediation envelope into MCP `_meta` on every forwarded
+# call. Its `rid` is the id of pipelock's own receipt for that call, which is
+# what lets the two evidence chains be joined afterwards instead of matched by
+# hand. solution/server.ts reads it and records it as its receipt's
+# correlation_id.
+#
+# The envelope is NOT signed on either MCP transport, stdio or HTTP. Setting
+# `sign: true` here is accepted without warning and still produces no
+# signature headers on an MCP link (tested on v3.5.0, stdio and HTTP), so
+# treat `rid` as a join key and
+# nothing else. The envelope's `vd: "allow"` and `actor` fields are the
+# mediator's claims, and a server that let them influence a decision would be
+# taking an untrusted caller's word for its own authorization.
+mediation_envelope:
+  enabled: true
+
+flight_recorder:
+  enabled: true
+  dir: stacking/evidence
+  # Without a signing key you still get a hash-chained evidence log, but no
+  # signed action receipts — and the receipt comparison is the whole point of
+  # the stacked exercise. `pipelock keygen` writes this file.
+  signing_key_path: stacking/plhome/agents/scoop-mediator/id_ed25519
+
+# Note on what this config does NOT turn on:
+#
+#   - Pipelock's own per-agent budgets (denial-of-wallet). They are off by
+#     default, which is why `npm run hammer` through this stack is still
+#     stopped by the SERVER's rate limit at 30, not by the proxy.
+#   - Request redaction (rewriting secrets to <pl:...> placeholders before
+#     forwarding). Leaving it off matters for the exercise: with it on, the
+#     server receives rewritten arguments and commits its receipt to those,
+#     so the server's evidence and what the client actually sent diverge.
+#     Untested here — worth checking before teaching it.
