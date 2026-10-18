@@ -38,6 +38,6 @@ To see it yourself: `npm run hammer`. It should stop after 30 guesses.
 
 ## Before you move on
 
-Your limit is 30 a minute. How many guesses could the hammer get through in two seconds if it timed them well? And what happens to the count if the server restarts, or runs as two copies?
+Your limit is per caller. Who decides who the caller is, and what happens to the limit if that answer is wrong?
 
 `callerId()` in `src/server.ts` reads the caller from the OAuth token, so every client that registers is a caller of its own. Change it to return a random id each time, and run the hammer again. What happened to the limit? And if it returned one constant for everyone, what would two clients do to each other? Then put `callerId()` back as it was: the later checks run the hammer again.
