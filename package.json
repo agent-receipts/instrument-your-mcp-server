@@ -19,6 +19,7 @@
     "walkthrough": "tsx examples/guard-walkthrough.ts",
     "verify": "tsx solution/verify.ts",
     "forge": "tsx examples/forge.ts",
+    "token": "tsx examples/token.ts",
     "typecheck": "tsc --noEmit",
     "catchup": "tsx workshop/catchup.ts",
     "check": "tsx workshop/check.ts",

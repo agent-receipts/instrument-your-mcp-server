@@ -1,0 +1,4 @@
+[
+  { "role": "system", "content": "You help customers of an ice cream truck. Use the tools to answer." },
+  { "role": "user", "content": "{{request}}" }
+]
