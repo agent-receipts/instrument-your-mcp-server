@@ -8,7 +8,7 @@ Run `npm run menu`. This month's seasonal flavour, `pineapple-lumps`, comes stra
 
 The scanner you'll write is a tripwire, not a defence: before this step ends you'll write a note that gets past it. Its job here is to make the response side checked and recorded at all. Off-the-shelf detection libraries don't change that much: tried against this truck, two of them missed the supplier's note and every rewording of it.
 
-If you have [Ollama](https://ollama.com) and `ollama pull qwen3:8b`, `npm run chat` asks a small local model the same question. Watch what it does with the note.
+If you have [Ollama](https://ollama.com) and `ollama pull qwen3:8b`, `npm run chat` asks a small local model the same question (another model you've pulled: `npm run chat -- --model <name>`). Watch what it does with the note.
 
 ## What to build
 

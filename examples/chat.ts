@@ -10,13 +10,20 @@
 //   npm run chat                             # the uninstrumented truck
 //   npm run chat -- solution/server.ts       # the instrumented one
 //   npm run chat -- "Any caramel left?"      # ask something else
-//   OLLAMA_MODEL=qwen3:14b npm run chat      # a different model
+//   npm run chat -- --model qwen3:14b        # a different model you've pulled
+//                                            # (or set OLLAMA_MODEL)
 
 import { textOf, withClient } from "./attacks.js";
 import { spawnFromArgv } from "./spawn.js";
 
 const OLLAMA = process.env["OLLAMA_HOST"] ?? "http://localhost:11434";
-const MODEL = process.env["OLLAMA_MODEL"] ?? "qwen3:8b";
+
+// --model works the same in every shell; setting an environment variable
+// doesn't (bash, fish and PowerShell each want it written differently).
+const ARGV = process.argv.slice(2);
+const MODEL_FLAG = ARGV.indexOf("--model");
+const MODEL = (MODEL_FLAG !== -1 ? ARGV[MODEL_FLAG + 1] : undefined) ?? process.env["OLLAMA_MODEL"] ?? "qwen3:8b";
+const OWN_ARGV = MODEL_FLAG === -1 ? ARGV : [...ARGV.slice(0, MODEL_FLAG), ...ARGV.slice(MODEL_FLAG + 2)];
 const MAX_TURNS = 5;
 
 interface ToolCall {
@@ -43,12 +50,26 @@ async function ask(messages: Message[], tools: unknown[]): Promise<Message> {
   } catch {
     throw new Error(`can't reach Ollama at ${OLLAMA}. Is "ollama serve" running?`);
   }
+  if (res.status === 404) throw new Error(await notInstalled());
   if (!res.ok) throw new Error(`Ollama said ${res.status}: ${await res.text()}`);
   return ((await res.json()) as { message: Message }).message;
 }
 
+/** Ollama answers 404 when the model isn't pulled. Say so, and list what is. */
+async function notInstalled(): Promise<string> {
+  let names: string[] = [];
+  try {
+    const tags = (await (await fetch(`${OLLAMA}/api/tags`)).json()) as { models?: Array<{ name: string }> };
+    names = (tags.models ?? []).map((m) => m.name);
+  } catch {
+    // Listing is a nicety; the advice below still holds without it.
+  }
+  const pick = names.length > 0 ? `, or pick one you have: npm run chat -- --model ${names[0]}\n(installed: ${names.join(", ")})` : "";
+  return `${MODEL} isn't installed in Ollama. Run "ollama pull ${MODEL}"${pick}`;
+}
+
 async function main(): Promise<void> {
-  const argv = process.argv.slice(2);
+  const argv = OWN_ARGV;
   const via = argv.indexOf("--via");
   const own = via === -1 ? argv : argv.slice(0, via);
   const question = own.find((a) => !a.endsWith(".ts") && !a.startsWith("-")) ?? "What's on the truck today?";
