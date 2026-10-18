@@ -4,17 +4,24 @@ Optional. Nothing in the steps or checks needs it. Try it if you finish a step e
 
 ## What promptfoo is
 
-[promptfoo](https://www.promptfoo.dev) is an open-source tool for testing what a model does. You write test cases in a YAML file, it sends each one to a model, and it checks the answers against assertions you write. It can hand the model an MCP server's tools and run the tool calls the model makes, so a test can check what your server did, not only what the model said. It runs from the command line, which makes it easy to put in CI.
+[promptfoo](https://www.promptfoo.dev) is an open-source tool for testing what a model does. You write test cases in a YAML file, it sends each one to a model, and it checks the answers against assertions you write. It can hand the model an MCP server's tools and run the tool calls the model makes, so a test can check what your server did, not only what the model said. It runs from the command line, which makes it easy to put in CI. It's MIT-licensed, and since March 2026 it has been owned by OpenAI, which has said the open-source project continues.
 
 `examples/promptfoo.yaml` turns the heist and the poisoned menu into six tests. Each asks a model to do one thing (refund $9,000, comp a free scoop, text everyone, show the menu) and checks whether the truck went through with it or refused.
 
 ## Before you start
 
-- **A model.** By default it uses `qwen3:8b` through Ollama, as in step 5 (`ollama pull qwen3:8b`, and Ollama running). No API key, and nothing leaves your machine. To use a hosted model instead, see the comments in the YAML file.
+- **A model.** By default it uses `qwen3:8b` through Ollama, as in step 5 (`ollama pull qwen3:8b`, and Ollama running). No API key, and your prompts and the model's answers stay on your machine. To use a hosted model instead, see the comments in the YAML file.
 - **promptfoo.** You don't install it into the project; `npx` fetches it the first time. It's large: about 2 GB of disk, and over a minute on a fast connection. On shared Wi-Fi it can take much longer, so fetch it before the day if you can:
 
   ```bash
   npx promptfoo@0.124.1 --version
+  ```
+
+- **What promptfoo itself sends.** By default it reports basic usage telemetry (which commands ran and which assertion types were used, not your prompts, answers or tests) and checks npm for updates. To turn both off:
+
+  ```bash
+  export PROMPTFOO_DISABLE_TELEMETRY=1 PROMPTFOO_DISABLE_UPDATE=1   # macOS, Linux, Git Bash
+  $env:PROMPTFOO_DISABLE_TELEMETRY = 1; $env:PROMPTFOO_DISABLE_UPDATE = 1   # PowerShell
   ```
 
 ## Run it
