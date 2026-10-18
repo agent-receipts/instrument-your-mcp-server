@@ -15,9 +15,7 @@ the place to find out npm can't reach the registry.
   - Then open a new terminal (or run `source ~/.bashrc`, or your shell's
     equivalent) so `node --version` shows the new version. With nvm, if it
     still shows the old one, run `nvm alias default --lts` and open another.
-- **git**. No git? Download the zip from the repo's Releases page at
-  https://github.com/agent-receipts/instrument-your-mcp-server instead, and
-  unzip it in place of the `git clone` below.
+- **git**.
 - **An AI coding assistant**, whichever you normally use. The exercises
   assume you'll have one.
 
@@ -78,7 +76,8 @@ ollama run qwen3:8b "say hi"  # should answer within a minute
 
 An interrupted pull carries on where it left off when you run it again,
 even if its progress bar starts low. In step 5, `npm run chat` uses this
-model; Ollama needs to be running.
+model; Ollama needs to be running. To use another model you've pulled:
+`npm run chat -- --model <name>`.
 
 ## Trying the material early
 
