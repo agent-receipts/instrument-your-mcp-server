@@ -52,6 +52,10 @@ short we may catch the room up through a step together. Each has a brief:
 After each one, `npm run check <n>` tells you whether it's done and, if not,
 what's missing.
 
+Finished early, or want to keep the attacks as tests? The optional
+[promptfoo extra](steps/extra-promptfoo.md) runs them through a model, in a
+form you can point at your own server and run in CI.
+
 If you fall behind, there are two ways to catch up. Use whichever suits you:
 
 - **`npm run catchup <n>`** puts `src/` at the end of step `n`. It saves
