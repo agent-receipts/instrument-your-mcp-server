@@ -2,21 +2,24 @@
 # instrumented scoop truck. Verified against pipelock v3.5.0 (stdio) and
 # v3.7.0 (HTTP reverse proxy, the current setup).
 #
-# Setup (once):
-#   export PIPELOCK_HOME=$PWD/stacking/plhome
-#   pipelock keygen scoop-mediator
+# Step 6 (steps/6-pipelock.md) walks through all of this.
+#
+# Setup (once, from the project folder). This makes a key of your own; it's
+# gitignored and must never be committed:
+#   pipelock keygen scoop-mediator --keystore stacking/plhome
 #
 # Run the stack. The demo script starts the server, then pipelock with
 # `--listen 127.0.0.1:<port> --upstream <server url>` appended, and connects
 # through it with a token from the server's own OAuth endpoints:
-#   npm run heist  -- --via pipelock mcp proxy --config stacking/pipelock.yaml -- npx tsx solution/server.ts
-#   npm run hammer -- --via pipelock mcp proxy --config stacking/pipelock.yaml -- npx tsx solution/server.ts
+#   npm run heist  -- --via pipelock mcp proxy --config stacking/pipelock.yaml -- npx tsx src/server.ts
+#   npm run hammer -- --via pipelock mcp proxy --config stacking/pipelock.yaml -- npx tsx src/server.ts
 #
-# Read the two chains afterwards — they do not say the same thing, but with
+# Read the two chains afterwards. They do not say the same thing, but with
 # the envelope on they can at least be joined:
 #   npm run verify                                    # the server's chain
 #   pipelock verify-receipt --chain stacking/evidence \
-#     --key "$PIPELOCK_HOME/agents/scoop-mediator/id_ed25519.pub"
+#     --key stacking/plhome/agents/scoop-mediator/id_ed25519.pub
+#   npm run join                                      # the two, side by side
 #
 # Paths below are relative to the project folder (the one with package.json). Replace <ABS> with an absolute
 # path if you run pipelock from elsewhere — it does not resolve these against

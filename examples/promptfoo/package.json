@@ -1,0 +1,27 @@
+{
+  "name": "truck-promptfoo",
+  "private": true,
+  "dependencies": {
+    "promptfoo": "0.124.1"
+  },
+  "overrides": {
+    "@openai/codex-sdk": "file:./stub",
+    "@anthropic-ai/claude-agent-sdk": "file:./stub",
+    "@opencode-ai/sdk": "file:./stub",
+    "@azure/ai-projects": "file:./stub",
+    "@azure/identity": "file:./stub",
+    "@azure/storage-blob": "file:./stub",
+    "@azure/msal-node": "file:./stub",
+    "@aws-sdk/client-bedrock-agent-runtime": "file:./stub",
+    "@aws-sdk/client-bedrock-runtime": "file:./stub",
+    "@aws-sdk/client-s3": "file:./stub",
+    "@aws-sdk/client-sagemaker-runtime": "file:./stub",
+    "node-sql-parser": "file:./stub",
+    "pdf-parse": "file:./stub",
+    "sharp": "file:./stub",
+    "natural": "file:./stub",
+    "@googleapis/sheets": "file:./stub",
+    "@modelcontextprotocol/server-filesystem": "file:./stub"
+  },
+  "description": "promptfoo for step 7, without the large optional packages it doesn't need here (about 300 MB instead of 2 GB)."
+}

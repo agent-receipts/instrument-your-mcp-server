@@ -1,16 +1,19 @@
-// Part two's two probes: one a proxy can read, one only the server understands.
+// Two probes: one a proxy can read, one only the server understands
+// (steps/6-pipelock.md).
 //
 //   npm run probe -- --via pipelock mcp proxy --config stacking/pipelock.yaml -- npx tsx src/server.ts
-//   npm run probe -- --via pipelock mcp proxy --config stacking/pipelock.yaml -- npx tsx solution/server.ts
 //
 // The first probe hides an instruction and a credential-shaped string in an
 // ordinary order. The second is a perfectly well-formed call to the one tool
 // that should never run unattended.
 
+import { realpathSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
 import { textOf, withClient } from "./attacks.js";
 import { spawnFromArgv } from "./spawn.js";
 
-const PROBES = [
+export const PROBES = [
   {
     label: "Prompt injection plus an AWS-style key, hidden in an order",
     name: "place_order",
@@ -44,7 +47,18 @@ async function main(): Promise<void> {
   });
 }
 
-main().catch((err: unknown) => {
-  console.error(err instanceof Error ? err.message : err);
-  process.exit(1);
-});
+function isMain(): boolean {
+  try {
+    return realpathSync(process.argv[1] ?? "") === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+
+// Run only when started as a script; npm run check 6 imports PROBES.
+if (isMain()) {
+  main().catch((err: unknown) => {
+    console.error(err instanceof Error ? err.message : err);
+    process.exit(1);
+  });
+}

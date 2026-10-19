@@ -36,3 +36,9 @@ reproduce the solution by other means.
 - Pose each "Before you move on" question to the attendee, but don't answer it
   or predict what they'll see until they've tried it themselves. Finding
   out is the point.
+- Steps 6 and 7 are guided: the attendee runs Pipelock and promptfoo
+  themselves. Help them install and run the tools, and read the output with
+  them, but let them compare the two evidence chains in step 6, and write
+  their own test in step 7. Don't write the test for them.
+- `npm run check 6` printing `SKIP` means Pipelock isn't installed. That's
+  fine; don't try to install it for them unless they ask.
