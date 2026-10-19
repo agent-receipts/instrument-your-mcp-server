@@ -6,6 +6,10 @@ Behind? `npm run catchup 3` puts `src/` at the end of step 3. Anything it replac
 
 `npm run heist` still gets 5 of 5 through: a $9,000 refund on a $9.00 order, a smaller refund that is still more than the order, a free scoop with nobody watching, and a text to 12,403 phones.
 
+## Why it matters
+
+The model chooses the arguments, so treat them like any other untrusted input. Without limits in the server, an agent that is confused, manipulated or simply wrong can refund any amount or text every customer. Policy is where the business rules live: how much can move without a person, what needs someone's approval, and what is off the table entirely.
+
 ## What to build
 
 1. In `src/policy.ts`, write `createShopPolicy(shop)`. It returns a `PolicyRuntime`: an object with one method, `evaluatePreToolCall({ toolName, args })`, that returns `{ allowed, reason }`.
