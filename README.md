@@ -33,8 +33,11 @@ on the presenter's screen.
 
 ## During the workshop
 
-A warm-up and five steps, each closing a gap in the truck. If time runs
-short we may catch the room up through a step together. Each has a brief:
+A warm-up and five steps, each closing a gap in the truck. Each step is
+time-boxed and the room moves on together, finished or not: you're welcome
+to write the code by hand, but when time's up, `npm run catchup <n>` and
+carry on. If time runs short we may catch the room up through a step
+together. Each has a brief:
 
 0. [Tool annotations](steps/0-annotations.md) (warm-up): let a
    client tell the harmless tools from the dangerous ones.

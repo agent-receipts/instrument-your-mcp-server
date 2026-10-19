@@ -17,7 +17,8 @@ the place to find out npm can't reach the registry.
     still shows the old one, run `nvm alias default --lts` and open another.
 - **git**.
 - **An AI coding assistant**, whichever you normally use. The exercises
-  assume you'll have one.
+  assume you'll have one: each step is time-boxed and the room moves on
+  together. Writing it by hand is fine, but plan to catch up when time's up.
 
 You don't need Pipelock, Docker, or anything else. Part two of the workshop is
 run from the front.
