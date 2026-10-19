@@ -183,6 +183,16 @@ one flavour. The pirate is harmless only because of what it asked for. A
 tool-call policy limits what an injection can make the model *do*; nothing
 here limits what it makes the model *say* to a person who then acts on it.
 
+### 6 and 7. A proxy in front, and the attacks as tests
+
+Two shorter, guided steps after step 5. Neither changes `src/` (apart from
+one function in step 6, if your server doesn't read Pipelock's envelope yet),
+so there's no catchup for them. Step 6 ([`steps/6-pipelock.md`](steps/6-pipelock.md))
+puts Pipelock in front of your truck, as below, and needs Pipelock installed.
+Step 7 ([`steps/7-promptfoo.md`](steps/7-promptfoo.md)) runs the attacks
+through a model with promptfoo, and asks you to add one of your own. Without
+Pipelock, `npm run check 6` reports the step as skipped, not failed.
+
 ## Stacking a proxy on top (part two)
 
 Both demo scripts take `--via`: a proxy command, then `--`, then the server
@@ -195,12 +205,12 @@ OAuth endpoints and travels through the proxy as a bearer header:
 npm run heist -- --via pipelock mcp proxy --config stacking/pipelock.yaml -- npx tsx solution/server.ts
 ```
 
-`stacking/pipelock.yaml` has the setup steps. The point of the exercise is
-what the two evidence trails say afterwards:
+`stacking/pipelock.yaml` has the setup steps, and step 6 walks through them.
+The point of the exercise is what the two evidence trails say afterwards:
 
 ```bash
 npm run verify                          # the server's receipt chain
-pipelock verify-receipt --chain stacking/evidence --key ...
+pipelock verify-receipt --chain stacking/evidence --key stacking/plhome/agents/scoop-mediator/id_ed25519.pub
 ```
 
 Both verify. **Neither is a complete account of the session.** The attack the
