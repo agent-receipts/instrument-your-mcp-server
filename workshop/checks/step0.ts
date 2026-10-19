@@ -10,6 +10,7 @@ import { ATTACK, describe, fail, pass, type CheckResult } from "./result.js";
 
 const READ_ONLY = ["list_flavors", "check_inventory"];
 const DESTRUCTIVE = ["issue_refund", "comp_free_scoop", "blast_promo_sms"];
+const CHANGES_STATE = ["place_order", "apply_discount_code"];
 
 export async function checkStep0(): Promise<CheckResult> {
   let tools: ToolDefinition[];
@@ -36,6 +37,12 @@ export async function checkStep0(): Promise<CheckResult> {
     }
     if (DESTRUCTIVE.includes(t.name) && a.destructiveHint === false) {
       return fail(`${t.name} can give away money, stock or messages, but says destructiveHint: false`);
+    }
+    if (CHANGES_STATE.includes(t.name) && a.destructiveHint !== false) {
+      return fail(
+        `${t.name} changes data but gives nothing away, yet says destructiveHint: true. ` +
+          "A careful client would ask before every one; set it to false",
+      );
     }
   }
   const blast = tools.find((t) => t.name === "blast_promo_sms");
