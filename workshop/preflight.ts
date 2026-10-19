@@ -13,18 +13,8 @@ import { paint } from "./lib/colour.js";
 import { MIN_NODE, nodeSupported } from "./lib/node.js";
 import { ROOT, serverSpawn } from "./lib/paths.js";
 
-/** The promptfoo version step 7 pins, and the Node it asks for. */
+/** The promptfoo version step 7 pins. */
 const PROMPTFOO = "0.124.1";
-const PROMPTFOO_NODE = "22.22.0";
-
-function nodeAtLeast(have: string, need: string): boolean {
-  const h = have.replace(/^v/, "").split(".").map(Number);
-  const n = need.split(".").map(Number);
-  for (let i = 0; i < n.length; i++) {
-    if ((h[i] ?? 0) !== (n[i] ?? 0)) return (h[i] ?? 0) > (n[i] ?? 0);
-  }
-  return true;
-}
 
 let failed = false;
 
@@ -69,7 +59,6 @@ function optionalTools(): void {
   const ollama = versionOf(process.env["SCOOP_OLLAMA"] ?? "ollama", ["--version"]);
   const missing = [
     ...(promptfoo ? [] : ["promptfoo not installed yet (npm run promptfoo:install)"]),
-    ...(nodeAtLeast(process.versions.node, PROMPTFOO_NODE) ? [] : [`promptfoo needs Node ${PROMPTFOO_NODE} or newer`]),
     ...(ollama ? [] : ["Ollama not installed"]),
   ];
   note(
@@ -85,7 +74,7 @@ async function main(): Promise<void> {
   report(
     nodeOk,
     `Node ${process.versions.node}`,
-    `The workshop needs Node ${MIN_NODE} or newer. Download it from https://nodejs.org`,
+    `The workshop needs Node ${MIN_NODE} or newer. Install the LTS from https://nodejs.org, or with nvm: nvm install --lts, then nvm alias default 'lts/*'. Open a new terminal and run npm run preflight again.`,
   );
 
   let depsError: string | null = null;

@@ -123,7 +123,11 @@ function main(): void {
   }
   console.log(`\n${joined.resolved} of ${joined.serverWithId} server correlation ids resolve to a proxy record.`);
   if (joined.serverWithId === 0) {
-    console.log("None of the server's receipts has a correlation id. Is the server reading Pipelock's envelope?");
+    console.log(
+      "None of the server's receipts has a correlation id. It takes two things: src/server.ts reads Pipelock's id\n" +
+        "from the request's _meta and passes it to the guard, and your sink in src/receipts.ts records\n" +
+        "entry.correlationId in the receipt. Item 3 of steps/6-pipelock.md has both.",
+    );
   }
 }
 

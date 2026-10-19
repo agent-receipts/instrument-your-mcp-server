@@ -1,9 +1,10 @@
 // The oldest Node the workshop runs on.
 //
 // @obsigna/sdk-ts imports node:sqlite, which only loads without a flag from
-// Node 22.13. On anything older, step 3 can't run at all.
+// Node 22.13; undici (a dependency) asks for 22.19, and promptfoo (step 7)
+// for 22.22. One floor for everything: 22.22. The current LTS, 24, is fine.
 
-export const MIN_NODE = "22.13.0";
+export const MIN_NODE = "22.22.0";
 
 export function nodeSupported(version: string): boolean {
   const have = version.replace(/^v/, "").split(".").map(Number);
