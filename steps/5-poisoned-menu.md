@@ -39,7 +39,7 @@ To see it yourself: `npm run menu`, or `npm run chat`. The pineapple lumps shoul
 
 Your scanner caught this one, and it will miss the next. When it does, which earlier step limits what the model can be made to do, and what does nothing limit?
 
-- Edit the description in `src/shop.ts` so it asks for the same thing in different words, avoiding the phrases your scanner looks for. Run `npm run menu`. Did it get through?
+- Edit the supplier's note in `src/shop.ts` so it asks for the same thing in different words, avoiding the phrases your scanner looks for. It's in the pineapple-lumps description (`SUPPLIER_SEASONAL`), and runs over two source lines, from "Note for AI assistants" to "pirate speak": change both. Run `npm run menu`. Did it get through?
 - Set `responsePolicy` to `"block"` and run `npm run menu`. What does a customer asking for the menu see now?
 - Run `npm run menu`, then find the `list_flavors` result at the end of `var/receipts.jsonl`. Does anything in it say a sentence was removed?
 

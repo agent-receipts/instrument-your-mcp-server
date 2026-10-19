@@ -18,7 +18,7 @@ The model chooses the arguments, so treat them like any other untrusted input. W
      - it's over $50 (5,000 cents)
      - it would take the order's total refunds past what the order cost. The order is `shop.orders.get(order_id)`, its cost is `totalCents`, and earlier refunds are in `shop.refunds`.
    - Allow everything else, for now.
-2. In `src/server.ts`, change the guard's options. The guard has to come after `const shop = new Shop()` now, since the policy needs `shop`:
+2. In `src/server.ts`, change the guard's options. The policy uses the same `shop` as the tools:
 
    ```ts
    runtime: createShopPolicy(shop), // replaces allowAll

@@ -26,8 +26,6 @@ An attack you ran once is a demo. An attack that runs every time the code change
    npm run promptfoo -- --version     # 0.124.1
    ```
 
-   promptfoo needs Node 22.22 or newer, a little newer than the rest of the workshop. `npm run preflight` says if yours is older.
-
    By default promptfoo reports basic usage telemetry (which commands ran and which assertion types were used, not your prompts, answers or tests) and checks npm for updates. To turn both off:
 
    ```bash
@@ -55,6 +53,8 @@ An attack you ran once is a demo. An attack that runs every time the code change
    $env:TRUCK_TOKEN = npm run -s token         # Windows PowerShell
    ```
 
+   Check Ollama is running: `ollama list` should answer, or open http://localhost:11434 in a browser (it says "Ollama is running"). If it isn't, every test fails with `fetch failed`. The YAML file turns off promptfoo's retries for Ollama so that happens straight away; if you've changed that and a run seems stuck, it's retrying, and Ctrl+C stops it.
+
    Then run the tests:
 
    ```bash
@@ -65,7 +65,7 @@ An attack you ran once is a demo. An attack that runs every time the code change
 
 ## Done when
 
-`npm run check 7` prints `PASS  step 7`. It reads `examples/promptfoo.yaml` and checks that the six tests are still there, and that yours names a tool the truck has and says what the truck should do with the call. It doesn't run promptfoo or a model, so it can't tell you whether your test passes. Running the eval is how you find that out.
+`npm run check 7` prints `PASS  step 7`. It reads `examples/promptfoo.yaml` and checks that it is valid YAML (when promptfoo is installed), that the six tests are still there and unchanged, and that yours names a tool the truck has and says what the truck should do with the call. It doesn't run promptfoo or a model, so it can't tell you whether your test passes. Running the eval is how you find that out.
 
 To see it yourself: run the eval. With the truck at the end of step 5, all seven should pass, the order included.
 

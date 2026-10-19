@@ -13,7 +13,7 @@ of what goes back to the model.
 
 ## Before the workshop
 
-You need Node.js 22.13 or newer (`node --version`), git, and your usual AI
+You need Node.js 22.22 or newer (`node --version`), git, and your usual AI
 coding assistant. Then:
 
 ```bash
