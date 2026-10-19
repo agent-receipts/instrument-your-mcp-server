@@ -4,6 +4,10 @@
 // Each step's check tests the module you wrote on its own, then runs a real
 // attack against src/server.ts. The logs it reads are deleted before each
 // run, so an old run can't pass or fail it for you.
+//
+// Steps 6 and 7 come after step 5 and don't change src/. Step 6's check
+// needs Pipelock; without it, the step is reported as skipped, not failed,
+// so someone who paired or watched can still run check 7.
 
 import { spawnSync } from "node:child_process";
 
@@ -17,11 +21,22 @@ import { checkStep2 } from "./checks/step2.js";
 import { checkStep3 } from "./checks/step3.js";
 import { checkStep4 } from "./checks/step4.js";
 import { checkStep5 } from "./checks/step5.js";
+import { checkStep6 } from "./checks/step6.js";
+import { checkStep7 } from "./checks/step7.js";
 
 /** Indexed by step number: CHECKS[0] is step 0's. */
-export const CHECKS: Array<() => Promise<CheckResult>> = [checkStep0, checkStep1, checkStep2, checkStep3, checkStep4, checkStep5];
+export const CHECKS: Array<() => Promise<CheckResult>> = [
+  checkStep0,
+  checkStep1,
+  checkStep2,
+  checkStep3,
+  checkStep4,
+  checkStep5,
+  checkStep6,
+  checkStep7,
+];
 
-const USAGE = "usage: npm run check <0-5>   (checks steps 0 up to that one)";
+const USAGE = "usage: npm run check <0-7>   (checks steps 0 up to that one)";
 
 /** Type errors in src/, as a note. tsx runs code without type-checking it,
  *  so a step can pass with code that doesn't compile. That shouldn't stop
@@ -49,16 +64,27 @@ async function main(): Promise<void> {
   const n = parseStep(process.argv.slice(2), USAGE);
   console.log(`Checking steps 0 to ${n} against src/\n`);
 
+  const skipped: number[] = [];
   for (const step of STEPS.filter((s) => s.n <= n)) {
     const check = CHECKS[step.n];
     if (!check) throw new Error(`no check for step ${step.n}`);
     const r = await check();
-    console.log(`${r.ok ? paint(["green", "bold"], "PASS") : paint(["red", "bold"], "FAIL")}  step ${step.n}  ${step.title}  ${indent(r.detail)}`);
+    const label = r.skipped
+      ? paint(["yellow", "bold"], "SKIP")
+      : r.ok
+        ? paint(["green", "bold"], "PASS")
+        : paint(["red", "bold"], "FAIL");
+    console.log(`${label}  step ${step.n}  ${step.title}  ${indent(r.detail)}`);
+    if (r.skipped) skipped.push(step.n);
     if (!r.ok) {
       typeNote();
       console.log(`      brief: ${step.brief}`);
       const current = STEPS.find((s) => s.n === n);
-      if (step.n < n && current) {
+      if (step.n < n && current?.module === undefined && step.module !== undefined) {
+        // Step 6 or 7 asked for, and part one doesn't pass: src/ isn't where
+        // those steps start.
+        console.log(`      Step ${n} starts from the end of step 5. To get there: npm run catchup 5`);
+      } else if (step.n < n && current) {
         console.log(
           `      This ran against your whole server, so code you added for step ${n} can cause it` +
             ` (brief: ${current.brief}).`,
@@ -68,7 +94,12 @@ async function main(): Promise<void> {
     }
   }
   typeNote();
-  console.log(`\n${paint("green", `Step ${n} done.`)}`);
+  if (skipped.includes(n)) {
+    console.log(`\n${paint("yellow", `Step ${n} wasn't checked on this machine (SKIP above).`)} Everything before it passes.`);
+  } else {
+    const note = skipped.length > 0 ? ` (step ${skipped.join(", ")} skipped)` : "";
+    console.log(`\n${paint("green", `Step ${n} done.`)}${note}`);
+  }
 }
 
 main().catch((err: unknown) => {
