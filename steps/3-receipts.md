@@ -10,6 +10,8 @@ The audit log is a text file. The server can rewrite it, and so can anyone with 
 
 An audit trail anyone can edit is only as trustworthy as everyone with access to the machine. When a record is disputed, by a customer, an auditor or a court, you need to show it hasn't changed since it was written. Signed, linked receipts make a change detectable, which a text file can't.
 
+If someone is on your server, haven't you lost already? Not entirely. Deleting or editing logs to cover tracks is a usual next step, and the person with access may be an insider rather than an outsider. But if the signing key sits on the same machine, they can re-sign the lot: the attacks at the end of this step show that, and what it takes to stop it.
+
 ## What to build
 
 In `src/receipts.ts`, write `ReceiptAuditSink`, using `@obsigna/sdk-ts`. It implements the same `AuditSink` interface as step 2, so the server change is one line.
