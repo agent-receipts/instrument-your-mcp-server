@@ -6,10 +6,14 @@ import { ROOT } from "../lib/paths.js";
 export interface CheckResult {
   ok: boolean;
   detail: string;
+  /** The step couldn't be checked on this machine (a tool isn't installed).
+   *  Not a failure: later steps still run. */
+  skipped?: boolean;
 }
 
 export const pass = (detail: string): CheckResult => ({ ok: true, detail });
 export const fail = (detail: string): CheckResult => ({ ok: false, detail });
+export const skip = (detail: string): CheckResult => ({ ok: true, skipped: true, detail });
 
 export const UNDEFINED_FIELD =
   "signing failed on an optional field set to undefined. Receipts are canonicalised " +
