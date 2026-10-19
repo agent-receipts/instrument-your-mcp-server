@@ -6,6 +6,10 @@ Behind? `npm run catchup 2` puts `src/` at the end of step 2. Anything it replac
 
 The audit log is a text file. The server can rewrite it, and so can anyone with access to the machine. Everything in it is true, and none of it can be proven.
 
+## Why it matters
+
+An audit trail anyone can edit is only as trustworthy as everyone with access to the machine. When a record is disputed, by a customer, an auditor or a court, you need to show it hasn't changed since it was written. Signed, linked receipts make a change detectable, which a text file can't.
+
 ## What to build
 
 In `src/receipts.ts`, write `ReceiptAuditSink`, using `@obsigna/sdk-ts`. It implements the same `AuditSink` interface as step 2, so the server change is one line.

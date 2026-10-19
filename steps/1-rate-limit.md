@@ -6,6 +6,10 @@ Behind? `npm run catchup 0` puts `src/` at the end of step 0. Anything it replac
 
 `npm run hammer` guessed the truck's four-digit discount code in about 4,800 tries, in a couple of seconds. Nothing slowed it down. The only trace is `var/server.log`, which now holds every code it tried, in plain text.
 
+## Why it matters
+
+An agent works at machine speed. Anything that can be guessed by trying, a discount code, an account number, a one-time code, can be guessed by an agent in seconds, and nothing in MCP slows it down. A rate limit is the cheapest control that turns "seconds" into "not today". It only works if you know who is calling.
+
 ## What to build
 
 1. In `src/rateLimit.ts`, write `FixedWindowRateLimitStore`. It implements `RateLimitStore` from `src/toolGuard.ts`:
