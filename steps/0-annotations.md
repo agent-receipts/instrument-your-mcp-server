@@ -14,6 +14,8 @@ In `src/tools.ts`, give each tool in `TOOLS` an `annotations` object. These are 
 
 Decide for each of the seven tools from what it does, not its name. The `ToolDefinition` type already has the field.
 
+MCP also has `idempotentHint` (calling it twice does no more than once). It's optional here: the check doesn't look at it, and the client in this step ignores it.
+
 ## Done when
 
 `npm run check 0` prints `PASS  step 0`. It checks each tool's hints against what the tool does, then that they reach a client.
