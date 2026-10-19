@@ -30,8 +30,14 @@ export const OVERBROAD_SCANNER =
  *  scanner that flags too much does the same. */
 export function describe(err: unknown): string {
   const message = err instanceof Error ? err.message : String(err);
-  if (/RFC 8785/.test(message) && /undefined/.test(message)) return `${message}\n${UNDEFINED_FIELD}`;
-  if (/Response blocked|sanitization incomplete/.test(message)) return `${message}\n${OVERBROAD_SCANNER}`;
+  // The explanation goes straight after the error's first line, before any
+  // server stderr attached to it, where it's hard to miss.
+  const explain = (hint: string) => {
+    const [first, ...rest] = message.split("\n");
+    return [first, hint, ...rest].join("\n");
+  };
+  if (/RFC 8785/.test(message) && /undefined/.test(message)) return explain(UNDEFINED_FIELD);
+  if (/Response blocked|sanitization incomplete/.test(message)) return explain(OVERBROAD_SCANNER);
   return message;
 }
 
