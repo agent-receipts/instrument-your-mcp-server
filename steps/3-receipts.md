@@ -46,7 +46,7 @@ Where to look: the SDK's types in `node_modules/@obsigna/sdk-ts` (start with `cr
 
 `npm run check 3` prints `PASS  step 3`. It signs a small test chain with your sink and checks that the issuer matches the key, the parameters are hashed, and a second run gets a new key and a new file. Then it runs the heist and verifies the chain your server wrote.
 
-To see it yourself: `npm run heist`, then `npm run verify`.
+To see it yourself: `npm run heist`, then `npm run verify`. `npm run log` shows the chain as a table.
 
 ## Watch out for
 

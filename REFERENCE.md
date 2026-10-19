@@ -15,6 +15,7 @@ npm run server:solution   # the instrumented version
 npm run heist             # 5 requests a security team would want to know about
 npm run hammer            # brute-force the discount code — about a second
 npm run verify            # check the receipt chain the instrumented server wrote
+npm run log               # the audit log or receipt chain as a table (-- --denied)
 
 npm run walkthrough       # the guard on its own, no server involved
 npm run typecheck
