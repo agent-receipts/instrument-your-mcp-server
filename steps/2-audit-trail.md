@@ -39,4 +39,4 @@ To see it yourself: `npm run hammer`, then open `var/audit.jsonl`. The denials s
 Could someone reading `var/audit.jsonl` tell that the truck was attacked? Could they prove to someone else that nobody changed it?
 
 - Run the hammer again and look at `var/server.log`. You redacted the audit trail; what's still in the app log? What would you do about it on a real server?
-- Run `npm run hammer`, then open `var/audit.jsonl` and change one denial's `"allowed": false` to `true`. (Only the hammer gets denied: after any other command, every entry says allowed.) Would anyone reading the file notice? That's step 3. (Do this one yourself in an editor: an AI assistant may refuse to edit an audit log, even a throwaway one.)
+- Run `npm run hammer`, then open `var/audit.jsonl` and change one denial's `"allowed": false` to `true`. (Only the hammer gets denied, from its 31st guess on: after any other command, every entry says allowed.) Would anyone reading the file notice? That's step 3. (Do this one yourself in an editor: an AI assistant may refuse to edit an audit log, even a throwaway one.)
