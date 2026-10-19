@@ -17,6 +17,7 @@
 
 import { HEIST_STEPS, runHeist } from "./attacks.js";
 import { spawnFromArgv } from "./spawn.js";
+import { describe } from "../workshop/checks/result.js";
 
 async function main(): Promise<void> {
   const spawn = spawnFromArgv(process.argv.slice(2));
@@ -42,6 +43,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((err: unknown) => {
-  console.error(err instanceof Error ? err.message : err);
+  console.error(describe(err));
   process.exit(1);
 });

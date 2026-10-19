@@ -57,5 +57,13 @@ export async function checkStep5(): Promise<CheckResult> {
   }
   if (isError) return pass("the menu was withheld (block). The note never reached the model, and neither did the menu");
   if (!text.includes("vanilla")) return fail(`the menu came back without its flavours: "${text}"`);
+  // Only a menu that has run together fails here, not other changes to
+  // spacing: two prices on one line means two flavours on one line.
+  if (text.split(/\r?\n/).some((line) => (line.match(/\$\d+\.\d\d\/scoop/g) ?? []).length > 1)) {
+    return fail(
+      "the menu came back with its flavours run together on one line. Your sanitizer took out the line breaks " +
+        "as well as the note. Take out only the offending sentences, and leave the rest of the text as it was",
+    );
+  }
   return pass("the supplier's note was stripped (sanitize); the rest of the menu came through");
 }

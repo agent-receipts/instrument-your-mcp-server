@@ -34,6 +34,7 @@ In `src/receipts.ts`, write `ReceiptAuditSink`, using `@obsigna/sdk-ts`. It impl
     - `sequence`: 1 for the first receipt, then 2, 3 and so on
     - `previous_receipt_hash`: `null` for the first, then `hashReceipt()` of the receipt before
     - `chain_id`: a random UUID made in the constructor (`randomUUID()` from `node:crypto`)
+  - `correlationId` (optional): `entry.correlationId`, only when it's set. Nothing sets it until step 6, where it joins your receipts to a proxy's records.
 - In `src/server.ts`, swap the sink: `auditSink: new ReceiptAuditSink("var/receipts.jsonl")`. This replaces `JsonlAuditSink`, so `var/audit.jsonl` stops being written; you can remove its import.
 
 Imports: `didFromPublicKey` comes from `@obsigna/sdk-ts`. `createReceipt`, `signReceipt`, `hashReceipt`, `generateKeyPair` and `sha256` come from `@obsigna/sdk-ts/receipt`.

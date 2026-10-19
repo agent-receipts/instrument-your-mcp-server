@@ -49,6 +49,18 @@ export async function checkStep4(): Promise<CheckResult> {
     if (!(await ask("issue_refund", { order_id: full.id, amount_cents: full.totalCents, reason: "x" }))) {
       return fail("the policy refused a full refund of exactly the order total. Refunding all of it is fine; more than all of it isn't");
     }
+    // Two refunds that are each fine on their own, but not together.
+    const twice = shop.placeOrder("check", "vanilla", 2); // $9.00
+    if (!(await ask("issue_refund", { order_id: twice.id, amount_cents: 500, reason: "x" }))) {
+      return fail("the policy refused a $5 refund on a $9.00 order with nothing refunded yet. Ordinary refunds should go through");
+    }
+    shop.issueRefund(twice.id, 500, "x");
+    if (await ask("issue_refund", { order_id: twice.id, amount_cents: 500, reason: "x" })) {
+      return fail(
+        "the policy allowed a second $5 refund on a $9.00 order that already had $5 back, so $10 in all. " +
+          "Add up the earlier refunds in shop.refunds for that order, and refuse when the new one would take the total past totalCents",
+      );
+    }
     for (const amount of [-500, 0, 12.5]) {
       if (await ask("issue_refund", { order_id: bigger.id, amount_cents: amount, reason: "x" })) {
         return fail(`the policy allowed a refund of ${amount} cents. Refuse anything that isn't a positive whole number`);
