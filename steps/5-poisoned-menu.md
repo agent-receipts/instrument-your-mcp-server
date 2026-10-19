@@ -10,6 +10,10 @@ The scanner you'll write is a tripwire, not a defence: before this step ends you
 
 If you have [Ollama](https://ollama.com) and `ollama pull qwen3:8b`, `npm run chat` asks a small local model the same question (another model you've pulled: `npm run chat -- --model <name>`). Watch what it does with the note.
 
+## Why it matters
+
+Everything a tool returns goes into the model's context, including text nobody on your team wrote: a supplier's product feed, a customer's message, a document. An instruction planted there can change what the agent says or tries to do. You can't fully stop that, but you can check for it and record it, and step 4 limits what it can make the agent do.
+
 ## What to build
 
 1. In `src/responseScan.ts`, write `PromptInjectionScanner`. It implements `ResponseScanner` from `src/toolGuard.ts`:

@@ -4,6 +4,10 @@
 
 Run `npm run client`. It shows what a careful MCP client would let run without asking. Right now that's nothing: the truck's tools say nothing about themselves, so a client can't tell `list_flavors` from `issue_refund` and has to ask about every call. Ask about everything for long enough and people click "always allow", which is worse.
 
+## Why it matters
+
+A client decides what it lets an agent run without asking from what your tools say about themselves. Say nothing, and a careful client asks about every call until people learn to click "always allow". Say it well, and the harmless calls run while the risky ones, the refunds and the messages to customers, still get a person's attention. In a real business those are the tools that move money or send documents out.
+
 ## What to build
 
 In `src/tools.ts`, give each tool in `TOOLS` an `annotations` object. These are MCP's hints about what a tool does:
