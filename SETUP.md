@@ -20,8 +20,8 @@ the place to find out npm can't reach the registry.
   assume you'll have one: each step is time-boxed and the room moves on
   together. Writing it by hand is fine, but plan to catch up when time's up.
 
-You don't need Pipelock, Docker, or anything else. Part two of the workshop is
-run from the front.
+That's all you need. Steps 6 and 7 use two more tools; they're optional,
+and the section at the end says how to get them.
 
 ## Steps
 
@@ -38,9 +38,15 @@ npm run preflight
 ok    Node 22.x.x
 ok    dependencies installed
 ok    the truck starts and lists its flavours
+note  Pipelock not installed: needed only for step 6. ...
+note  promptfoo not fetched yet (...): needed only for step 7. ...
 
 You're ready.
 ```
+
+The two lines about steps 6 and 7 say `ok` if you have those tools, and
+`note` if you don't. A `note` is fine: see "If you want to do steps 6 and 7
+yourself" below.
 
 If you upgraded Node after running `npm install`, you don't need to run it
 again. This project has no compiled dependencies.
@@ -79,6 +85,47 @@ An interrupted pull carries on where it left off when you run it again,
 even if its progress bar starts low. In step 5, `npm run chat` uses this
 model; Ollama needs to be running. To use another model you've pulled:
 `npm run chat -- --model <name>`.
+
+## If you want to do steps 6 and 7 yourself
+
+Optional. Steps 6 and 7 are short, guided steps at the end. If you don't
+have these tools, pair with someone who does, or watch: nothing else in the
+workshop needs them.
+
+**Step 6: Pipelock** (a proxy that sits in front of an MCP server). You need
+version 3.7.0 or newer.
+
+- **macOS:** `brew install luckyPipewrench/tap/pipelock`
+- **Linux and Windows:** download the file for your system from
+  https://github.com/luckyPipewrench/pipelock/releases/tag/v3.7.0 (for
+  example `pipelock_3.7.0_linux_amd64.tar.gz` or
+  `pipelock_3.7.0_windows_amd64.zip`; `arm64` for ARM machines). Unpack it
+  and put `pipelock` (`pipelock.exe` on Windows) somewhere on your `PATH`.
+  Don't build it with `make install`: that needs Go, and builds a different
+  edition. We haven't tried step 6 on Windows yet.
+
+Check it with `pipelock version`. You make its signing key during step 6.
+
+**Step 7: promptfoo and a model.**
+
+- A local model: Ollama and `qwen3:1.7b` (about 1.4 GB):
+  `ollama pull qwen3:1.7b`. If you already pulled `qwen3:8b` for step 5,
+  that works too. To use a hosted model with an API key instead, step 7's
+  brief says how.
+- promptfoo itself, installed ahead of time into its own folder (about
+  300 MB). From this folder, after `npm install`:
+
+  ```bash
+  npm run promptfoo:install
+  ```
+
+  promptfoo needs Node 22.22 or newer.
+
+  By default promptfoo sends basic usage telemetry and checks for updates.
+  Step 7's brief says how to turn both off.
+
+Run `npm run preflight` again afterwards: the two lines for steps 6 and 7
+should say `ok`.
 
 ## Trying the material early
 

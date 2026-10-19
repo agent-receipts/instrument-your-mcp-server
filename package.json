@@ -19,6 +19,8 @@
     "walkthrough": "tsx examples/guard-walkthrough.ts",
     "verify": "tsx solution/verify.ts",
     "log": "tsx examples/log.ts",
+    "promptfoo:install": "npm install --prefix examples/promptfoo --no-audit --no-fund",
+    "promptfoo": "npm exec --prefix examples/promptfoo -- promptfoo",
     "forge": "tsx examples/forge.ts",
     "token": "tsx examples/token.ts",
     "typecheck": "tsc --noEmit",
