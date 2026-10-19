@@ -6,6 +6,10 @@ Behind? `npm run catchup 1` puts `src/` at the end of step 1. Anything it replac
 
 The hammer is stopped now, and `var/server.log` has a line for every call. But it isn't an audit trail. It records what was asked, never what the server decided or what happened. It doesn't show that the hammer was stopped. And it keeps every argument as given, so it's a list of guesses at a live discount code.
 
+## Why it matters
+
+When something goes wrong, someone will ask what happened: a customer disputing a refund, your manager after an incident, an auditor checking how decisions get made. With an agent in the loop, "the agent did it" isn't an answer. You need to show who asked for what, what the server decided, and when, without the log becoming a leak of its own. An audit trail doesn't prevent anything. It lets you find out afterwards.
+
 ## What to build
 
 1. In `src/auditLog.ts`, write `JsonlAuditSink`. It implements `AuditSink` from `src/toolGuard.ts`:
