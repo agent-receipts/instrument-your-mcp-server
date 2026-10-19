@@ -18,7 +18,11 @@ You don't change the truck, unless item 3 says so. You put Pipelock in front of 
 
 1. Install Pipelock 3.7.0 or newer, and check it with `pipelock version`.
    - **macOS:** `brew install luckyPipewrench/tap/pipelock`
-   - **Linux and Windows:** download the file for your system from the [3.7.0 release](https://github.com/luckyPipewrench/pipelock/releases/tag/v3.7.0) (for example `pipelock_3.7.0_linux_amd64.tar.gz` or `pipelock_3.7.0_windows_amd64.zip`; `arm64` for ARM machines). Unpack it and put `pipelock` (`pipelock.exe` on Windows) somewhere on your `PATH`. Don't build it with `make install`: that needs Go, and builds a different edition.
+   - **Linux and Windows:** download the file for your system from the [3.7.0 release](https://github.com/luckyPipewrench/pipelock/releases/tag/v3.7.0) (for example `pipelock_3.7.0_linux_amd64.tar.gz` or `pipelock_3.7.0_windows_amd64.zip`; `arm64` for ARM machines). Unpack it and put `pipelock` (`pipelock.exe` on Windows) in a folder on your `PATH`.
+     - Linux: `~/.local/bin` is the usual place: `mkdir -p ~/.local/bin && mv pipelock ~/.local/bin/`. If `pipelock version` then says `command not found`, that folder isn't on your `PATH` yet. Add `export PATH="$HOME/.local/bin:$PATH"` to the end of `~/.bashrc` (or `~/.zshrc`), and open a new terminal.
+     - Windows: put it in a folder such as `%USERPROFILE%\bin`, then add that folder to `Path` in "Edit environment variables for your account" (search for it in the Start menu), and open a new terminal.
+
+     Don't build it with `make install`: that needs Go, and builds a different edition.
 2. Give Pipelock a signing key of its own:
 
    ```bash
@@ -26,7 +30,9 @@ You don't change the truck, unless item 3 says so. You put Pipelock in front of 
    ```
 
    The key is made on your machine and stays there. `stacking/pipelock.yaml` points at it, and `.gitignore` keeps it out of git. Don't commit it.
-3. Check that your server records Pipelock's id for each call. Pipelock writes the id of its own receipt into the request's `_meta`, and your server copies it into its receipt as the correlation id. That is what lets the two chains be joined. Search `src/server.ts` for `com.pipelock/mediation`. If it's there (it is if you used `npm run catchup 4` or `5`), go to item 4. If not, add this function:
+3. Check that your server records Pipelock's id for each call. Pipelock writes the id of its own receipt into the request's `_meta`. Your server reads it there and passes it to the guard, and your receipt sink records it in the receipt as the correlation id. That is what lets the two chains be joined, and it takes both: if you used `npm run catchup 4` or `5`, both are already done, so go to item 4. If not, check each.
+
+   First, the server. Search `src/server.ts` for `com.pipelock/mediation`. If it's not there, add this function to `src/server.ts`, just below `callerId()` (so `callerId()` keeps its own comment):
 
    ```ts
    function mediationCorrelationId(params: Record<string, unknown>): string | undefined {
@@ -39,7 +45,17 @@ You don't change the truck, unless item 3 says so. You put Pipelock in front of 
    }
    ```
 
-   Then, in the handler, work out `const correlationId = mediationCorrelationId(request.params as unknown as Record<string, unknown>);` and pass `correlationId` as the last argument to every `guardToolCall` and `guardToolResponse` call. Nothing signs this id on its way to your server, so anyone can put anything there. Use it as a label to join on, and for nothing else.
+   Then, in the handler, work out `const correlationId = mediationCorrelationId(request.params as unknown as Record<string, unknown>);` and pass `correlationId` as the last argument to every `guardToolCall` and `guardToolResponse` call.
+
+   Then the sink. The guard hands the id to your sink as `entry.correlationId`. Search `src/receipts.ts` for `correlationId`. If you wrote the sink yourself in step 3, it may not be there. Add it to what you pass to `createReceipt`, next to `chain`, and only when it's set (an `undefined` field breaks signing, as in step 3):
+
+   ```ts
+   ...(entry.correlationId ? { correlationId: entry.correlationId } : {}),
+   ```
+
+   It ends up in the signed receipt as `credentialSubject.correlation_id`, which is what `npm run join` reads.
+
+   Nothing signs this id on its way to your server, so anyone can put anything there. Use it as a label to join on, and for nothing else.
 4. Run the probe through Pipelock in front of your truck:
 
    ```bash
