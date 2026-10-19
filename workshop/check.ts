@@ -7,6 +7,7 @@
 
 import { spawnSync } from "node:child_process";
 
+import { paint } from "./lib/colour.js";
 import { ROOT } from "./lib/paths.js";
 import { STEPS, UsageError, parseStep } from "./lib/steps.js";
 import type { CheckResult } from "./checks/result.js";
@@ -34,7 +35,7 @@ function typeNote(): void {
   const errors = `${r.stdout ?? ""}`.split("\n").filter((l) => /^src[\\/].*error TS/.test(l));
   if (errors.length === 0) return;
   console.log(
-    `\nnote  ${errors.length} type error(s) in src/. Your code runs, but it won't compile cleanly.\n` +
+    `\n${paint("yellow", "note")}  ${errors.length} type error(s) in src/. Your code runs, but it won't compile cleanly.\n` +
       `      First one: ${errors[0]}\n` +
       "      Run npm run typecheck to see them all.",
   );
@@ -52,7 +53,7 @@ async function main(): Promise<void> {
     const check = CHECKS[step.n];
     if (!check) throw new Error(`no check for step ${step.n}`);
     const r = await check();
-    console.log(`${r.ok ? "PASS" : "FAIL"}  step ${step.n}  ${step.title}  ${indent(r.detail)}`);
+    console.log(`${r.ok ? paint(["green", "bold"], "PASS") : paint(["red", "bold"], "FAIL")}  step ${step.n}  ${step.title}  ${indent(r.detail)}`);
     if (!r.ok) {
       typeNote();
       console.log(`      brief: ${step.brief}`);
@@ -67,7 +68,7 @@ async function main(): Promise<void> {
     }
   }
   typeNote();
-  console.log(`\nStep ${n} done.`);
+  console.log(`\n${paint("green", `Step ${n} done.`)}`);
 }
 
 main().catch((err: unknown) => {
