@@ -32,7 +32,7 @@ When something goes wrong, someone will ask what happened: a customer disputing 
 
 `npm run check 2` prints `PASS  step 2`. It tests your sink and `redactShopParams` directly, then runs the hammer and reads your log for denials and for discount codes in plain text.
 
-To see it yourself: `npm run hammer`, then open `var/audit.jsonl`. The denials should be there, and no discount codes.
+To see it yourself: `npm run hammer`, then open `var/audit.jsonl`. The denials should be there, and no discount codes. `npm run log` shows the same file as a table.
 
 ## Watch out for
 
