@@ -9,17 +9,28 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
 import { ROOT, at } from "./lib/paths.js";
-import { STEPS, UsageError, parseStep, snapshotFor } from "./lib/steps.js";
+import { CATCHUP_STEPS, STEPS, UsageError, parseStep, snapshotFor } from "./lib/steps.js";
 
 const USAGE = "usage: npm run catchup <0-5>   (puts src/ at the end of that step)";
 
 function main(): void {
-  const n = parseStep(process.argv.slice(2), USAGE);
+  const argv = process.argv.slice(2);
+  // Steps 6 and 7 run tools against the truck from step 5 and don't change
+  // src/, so there is nothing to catch up to. Say that, not just the usage.
+  const arg = argv.find((a) => !a.startsWith("-"));
+  const guided = STEPS.find((s) => s.module === undefined && String(s.n) === arg);
+  if (guided) {
+    throw new UsageError(
+      `Step ${guided.n} doesn't change src/, so there's nothing to catch up to.\n` +
+        `It starts from the end of step 5. To get there: npm run catchup 5\n${USAGE}`,
+    );
+  }
+  const n = parseStep(argv, USAGE, CATCHUP_STEPS);
 
   const copies: Array<{ from: string; to: string }> = [
-    ...STEPS.filter((s) => s.n <= n).map((s) => ({
-      from: at("solution", s.module),
-      to: at("src", s.module),
+    ...CATCHUP_STEPS.filter((s) => s.n <= n).map((s) => ({
+      from: at("solution", s.module ?? ""),
+      to: at("src", s.module ?? ""),
     })),
     { from: at(snapshotFor(n)), to: at("src/server.ts") },
   ];
@@ -45,9 +56,10 @@ function main(): void {
   }
   const next = STEPS.find((s) => s.n === n + 1);
   console.log(
-    next
+    next?.module
       ? `\nsrc/ is now at the end of step ${n}. Next: ${next.brief}`
-      : "\nsrc/ now has every step, 0 to 5. Run: npm run heist",
+      : `\nsrc/ now has every step, 0 to 5. Run: npm run heist` +
+          (next ? `\nSteps 6 and 7 start from here: ${next.brief}` : ""),
   );
 }
 
