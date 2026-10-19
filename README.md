@@ -55,6 +55,10 @@ together. Each has a brief:
 After each one, `npm run check <n>` tells you whether it's done and, if not,
 what's missing.
 
+From step 2, `npm run log` shows the server's log as a table, one line per
+entry (`npm run log -- --denied` for refusals only). The raw file is still
+the one to open and edit for the attacks.
+
 Finished early, or want to keep the attacks as tests? The optional
 [promptfoo extra](steps/extra-promptfoo.md) runs them through a model, in a
 form you can point at your own server and run in CI.
