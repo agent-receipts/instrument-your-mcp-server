@@ -1,5 +1,8 @@
 # Instrument your MCP server
 
+![A pink ice cream truck by the water](.github/truck.jpg)
+<sub>Photo: Nhi Ly on Unsplash</sub>
+
 Workshop material for "Instrument your MCP server" at Agentic Engineering Day
 NZ, Auckland, 21 October 2026.
 
@@ -31,9 +34,13 @@ install [Ollama](https://ollama.com) and run `ollama pull qwen3:8b` (about
 prompt injection on your own machine. Without it, you'll see the same thing
 on the presenter's screen.
 
+**Optional, for steps 6 and 7:** Pipelock, and promptfoo fetched ahead of
+time. [SETUP.md](SETUP.md) says how. Pairing or watching is fine too.
+
 ## During the workshop
 
-A warm-up and five steps, each closing a gap in the truck. Each step is
+A warm-up and five steps, each closing a gap in the truck, then two shorter
+ones. Each step is
 time-boxed and the room moves on together, finished or not: you're welcome
 to write the code by hand, but when time's up, `npm run catchup <n>` and
 carry on. If time runs short we may catch the room up through a step
@@ -52,20 +59,26 @@ together. Each has a brief:
 5. [Poisoned menu](steps/5-poisoned-menu.md): keep a supplier's
    note to AI assistants off the menu the model reads.
 
+Then two shorter, guided steps. They start from the end of step 5 and don't
+change the truck much, so there's nothing to catch up to. Each needs a tool
+the rest of the workshop doesn't (see [SETUP.md](SETUP.md)); if you don't
+have it, pair with someone or watch.
+
+6. [A proxy in front](steps/6-pipelock.md): put Pipelock in front
+   of the truck, and join its evidence to yours.
+7. [The attacks as tests](steps/7-promptfoo.md): run the attacks
+   through a model with promptfoo, and add one of your own.
+
 After each one, `npm run check <n>` tells you whether it's done and, if not,
-what's missing.
+what's missing. Without Pipelock, `npm run check 6` says `SKIP`, not `FAIL`.
 
 From step 2, `npm run log` shows the server's log as a table, one line per
 entry (`npm run log -- --denied` for refusals only). The raw file is still
 the one to open and edit for the attacks.
 
-Finished early, or want to keep the attacks as tests? The optional
-[promptfoo extra](steps/extra-promptfoo.md) runs them through a model, in a
-form you can point at your own server and run in CI.
-
 If you fall behind, there are two ways to catch up. Use whichever suits you:
 
-- **`npm run catchup <n>`** puts `src/` at the end of step `n`. It saves
+- **`npm run catchup <n>`** puts `src/` at the end of step `n` (0 to 5). It saves
   anything it replaces in `var/catchup-backup/`, and doesn't need git.
 - **Branches.** `step-0` to `step-5` hold the same states. Commit or stash
   your work first, then `git switch step-2`. Compare your work with a

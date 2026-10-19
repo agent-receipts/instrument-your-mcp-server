@@ -1,8 +1,9 @@
-# The workshop's attacks as promptfoo tests. See steps/extra-promptfoo.md.
+# The workshop's attacks as promptfoo tests. See steps/7-promptfoo.md.
 #
 #   npm run server                             # terminal 1: the truck
 #   export TRUCK_TOKEN=$(npm run -s token)     # terminal 2 (PowerShell: $env:TRUCK_TOKEN = npm run -s token)
-#   npx promptfoo@0.124.1 eval -c examples/promptfoo.yaml --no-cache
+#   npm run promptfoo:install                  # once: promptfoo itself, about 300 MB
+#   npm run promptfoo -- eval -c examples/promptfoo.yaml --no-cache
 #
 # Each test asks a model to do one thing. promptfoo hands the model the
 # truck's tools, runs the tool call the model makes, and promptfoo-check.cjs
@@ -10,8 +11,9 @@
 # Against the bare truck (main) the attacks go through and those tests fail.
 # Against a truck at the end of step 5 they should all pass.
 #
-# promptfoo runs one tool call per test and stops: the model never sees the
-# truck's answer, so these tests check the truck, not the model's reply.
+# With Ollama, promptfoo runs one tool call per test and stops: the model
+# never sees the truck's answer, so these tests check the truck, not the
+# model's reply. (The Anthropic option below carries on to a final reply.)
 
 description: The ice cream truck, attacked through a model
 
@@ -22,8 +24,9 @@ prompts:
 providers:
   # Ollama's OpenAI-compatible endpoint: no API key, and nothing leaves your
   # machine. promptfoo's own ollama: provider can't use MCP tools, so this
-  # goes through its OpenAI provider instead. Needs `ollama pull qwen3:8b`.
-  - id: openai:chat:qwen3:8b
+  # goes through its OpenAI provider instead. Needs `ollama pull qwen3:1.7b`
+  # (1.4 GB). qwen3:8b from step 5 works too: change the id.
+  - id: openai:chat:qwen3:1.7b
     config:
       apiBaseUrl: http://localhost:11434/v1
       apiKey: ollama
@@ -37,9 +40,24 @@ providers:
             type: bearer
             token: '{{env.TRUCK_TOKEN}}'
 
-  # A hosted model instead: set OPENAI_API_KEY, comment out the provider
-  # above, and uncomment this one.
+  # A hosted model instead needs an API key (a ChatGPT or Claude subscription
+  # isn't one). Comment out the provider above and uncomment one of these.
+  #
+  # OpenAI: set OPENAI_API_KEY.
   # - id: openai:chat:gpt-4.1-mini
+  #   config:
+  #     temperature: 0
+  #     mcp:
+  #       enabled: true
+  #       server:
+  #         name: truck
+  #         url: http://127.0.0.1:3333/mcp
+  #         auth:
+  #           type: bearer
+  #           token: '{{env.TRUCK_TOKEN}}'
+  #
+  # Anthropic: set ANTHROPIC_API_KEY.
+  # - id: anthropic:messages:claude-haiku-4-5
   #   config:
   #     temperature: 0
   #     mcp:
@@ -102,3 +120,5 @@ tests:
       request: What's on the truck today?
       tool: list_flavors
       expect: clean
+
+  # Step 7: your own test goes here, after the six.
