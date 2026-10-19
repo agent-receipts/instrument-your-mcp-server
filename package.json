@@ -18,6 +18,7 @@
     "chat": "tsx examples/chat.ts",
     "walkthrough": "tsx examples/guard-walkthrough.ts",
     "verify": "tsx solution/verify.ts",
+    "log": "tsx examples/log.ts",
     "forge": "tsx examples/forge.ts",
     "token": "tsx examples/token.ts",
     "typecheck": "tsc --noEmit",
