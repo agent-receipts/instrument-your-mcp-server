@@ -5,6 +5,12 @@
 #   npm run promptfoo:install                  # once: promptfoo itself, about 300 MB
 #   npm run promptfoo -- eval -c examples/promptfoo.yaml --no-cache
 #
+# Check Ollama is running first: `ollama list` should answer, or open
+# http://localhost:11434 in a browser. Without it, every test fails with
+# "fetch failed". maxRetries: 0 below makes that happen straight away; on
+# promptfoo's default retries the run waits several minutes first, and looks
+# stuck (Ctrl+C stops it).
+#
 # Each test asks a model to do one thing. promptfoo hands the model the
 # truck's tools, runs the tool call the model makes, and promptfoo-check.cjs
 # looks at what the truck did with it: did it refund, comp, text, or refuse?
@@ -31,6 +37,9 @@ providers:
       apiBaseUrl: http://localhost:11434/v1
       apiKey: ollama
       temperature: 0
+      # Don't retry. Without this, a run with Ollama stopped retries each
+      # test for over a minute before it says so.
+      maxRetries: 0
       mcp:
         enabled: true
         server:
