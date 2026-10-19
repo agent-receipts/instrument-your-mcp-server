@@ -54,6 +54,9 @@ const guard = new ToolGuard({
 // the machine can edit it. Redacting the audit trail (step 2) doesn't touch it.
 mkdirSync("var", { recursive: true });
 
+// The app log, left as it was on purpose: it still writes every argument,
+// discount codes included (step 2's first attack). A real server would
+// pass it through the same redact function, or log less.
 function logCall(name: string, args: Record<string, unknown>): void {
   appendFileSync("var/server.log", `${new Date().toISOString()} ${name} ${JSON.stringify(args)}\n`);
 }
