@@ -116,7 +116,9 @@ export async function runHammer(
     });
     const orderText = textOf(order);
     const orderId = /order-\d+/.exec(orderText)?.[0];
-    if (!orderId) throw new Error(`couldn't find an order id in: ${orderText}`);
+    if (order.isError || !orderId) {
+      throw new Error(`the hammer's first order was refused, so it couldn't start. The server said: ${orderText}`);
+    }
     opts.onOrder?.(orderText, orderId);
 
     const startedAt = Date.now();

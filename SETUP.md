@@ -5,16 +5,16 @@ the place to find out npm can't reach the registry.
 
 ## You need
 
-- **Node.js 22.13 or newer.** Check with `node --version` before anything
-  else. 22.13 is a hard floor: the receipts library uses `node:sqlite`, which
-  only works without a flag from that version. If yours is older:
+- **Node.js 22.22 or newer.** Check with `node --version` before anything
+  else. The current LTS (24) is fine. 22.22 is a hard floor: the receipts
+  library and promptfoo need it. If yours is older:
   - **macOS or Windows:** install the LTS from https://nodejs.org/en/download
   - **Linux, or if you'd rather use a version manager:** install nvm
     (https://github.com/nvm-sh/nvm#installing-and-updating), open a new
     terminal, then run `nvm install --lts`
   - Then open a new terminal (or run `source ~/.bashrc`, or your shell's
     equivalent) so `node --version` shows the new version. With nvm, if it
-    still shows the old one, run `nvm alias default --lts` and open another.
+    still shows the old one, run `nvm alias default 'lts/*'` and open another.
 - **git**.
 - **An AI coding assistant**, whichever you normally use. The exercises
   assume you'll have one: each step is time-boxed and the room moves on
@@ -60,12 +60,12 @@ write logs under `var/`; your code isn't changed.
 | What you see | What to do |
 |---|---|
 | `npm install` prints `EBADENGINE` warnings | Your Node is too old. The install finishes anyway, but the workshop won't run. Upgrade Node (see above), then carry on. |
-| `FAIL  Node ...` | Install Node 22.13 or newer, open a new terminal (or `source ~/.bashrc`), check `node --version` shows the new version, and run `npm run preflight` again. |
-| `FAIL  Node ...` again, after installing with nvm | nvm kept your previous Node as its default. Run `nvm alias default --lts`, open a new terminal, and check `node --version`. |
+| `FAIL  Node ...` | Install Node 22.22 or newer, open a new terminal (or `source ~/.bashrc`), check `node --version` shows the new version, and run `npm run preflight` again. |
+| `FAIL  Node ...` again, after installing with nvm | nvm kept your previous Node as its default. Run `nvm alias default 'lts/*'`, open a new terminal, and check `node --version`. |
 | `FAIL  dependencies installed` | Run `npm install` in the repo folder and read its output for errors. If the error mentions `node:sqlite`, your Node is too old. |
 | `FAIL  the truck starts ...` | The message under it includes the server's own error output. Before the day, reply to the setup email with it. On the day, show it to one of the facilitators. |
 | `npm install` can't reach the registry | You may be behind a proxy or VPN. Try from another network. |
-| Certificate errors during `git clone` or `npm install` (`unable to get local issuer certificate`, `self-signed certificate in certificate chain`, `x509: certificate signed by unknown authority`) | Your network inspects TLS traffic, which is common on work laptops (Cloudflare WARP, Zscaler and similar). Ask your IT team for the CA certificate and point Node at it with `NODE_EXTRA_CA_CERTS`, or try from another network. |
+| A certificate error from `git clone`, `npm install` or a download (`self-signed certificate in certificate chain`, `unable to get local issuer certificate`, `certificate verification failed`) | Your network inspects HTTPS, as many work laptops and office networks do (Cloudflare WARP, Zscaler and similar). Easiest: try a personal network or a phone hotspot. Otherwise ask your IT team for their CA certificate and point Node at it with `NODE_EXTRA_CA_CERTS`. Don't switch certificate checks off. |
 | `ExperimentalWarning: SQLite is an experimental feature` | Harmless. Node prints it when the receipts library loads. |
 
 Tested on macOS and Linux (Debian) with Node 22. Windows should work, but
@@ -100,9 +100,17 @@ version 3.7.0 or newer.
   https://github.com/luckyPipewrench/pipelock/releases/tag/v3.7.0 (for
   example `pipelock_3.7.0_linux_amd64.tar.gz` or
   `pipelock_3.7.0_windows_amd64.zip`; `arm64` for ARM machines). Unpack it
-  and put `pipelock` (`pipelock.exe` on Windows) somewhere on your `PATH`.
+  and put `pipelock` (`pipelock.exe` on Windows) in a folder on your `PATH`.
   Don't build it with `make install`: that needs Go, and builds a different
   edition. We haven't tried step 6 on Windows yet.
+  - Linux: `~/.local/bin` is the usual place:
+    `mkdir -p ~/.local/bin && mv pipelock ~/.local/bin/`. If
+    `pipelock version` then says `command not found`, that folder isn't on
+    your `PATH` yet. Add `export PATH="$HOME/.local/bin:$PATH"` to the end
+    of `~/.bashrc` (or `~/.zshrc`), and open a new terminal.
+  - Windows: put it in a folder such as `%USERPROFILE%\bin`, then add that
+    folder to `Path` in "Edit environment variables for your account"
+    (search for it in the Start menu), and open a new terminal.
 
 Check it with `pipelock version`. You make its signing key during step 6.
 
@@ -119,7 +127,6 @@ Check it with `pipelock version`. You make its signing key during step 6.
   npm run promptfoo:install
   ```
 
-  promptfoo needs Node 22.22 or newer.
 
   By default promptfoo sends basic usage telemetry and checks for updates.
   Step 7's brief says how to turn both off.

@@ -7,7 +7,7 @@
 // failed, so someone who paired or watched can still run check 7.
 
 import { spawnSync } from "node:child_process";
-import { existsSync, rmSync } from "node:fs";
+import { existsSync, readFileSync, rmSync } from "node:fs";
 
 import { textOf, withClient } from "../../examples/attacks.js";
 import { PROBES } from "../../examples/probe.js";
@@ -27,6 +27,18 @@ const KEY = "stacking/plhome/agents/scoop-mediator/id_ed25519";
 interface Outcome {
   kind: "transport" | "refused" | "through";
   text: string;
+}
+
+/** Which half of the correlation id is missing, going by the source. Only a
+ *  hint: either file can do its part some other way. */
+function whereToLook(): string {
+  const read = (file: string) => (existsSync(at(file)) ? readFileSync(at(file), "utf8") : "");
+  const server = read("src/server.ts").includes("com.pipelock/mediation");
+  const sink = read("src/receipts.ts").includes("correlationId");
+  if (server && !sink) return "src/server.ts reads the envelope, but src/receipts.ts never mentions correlationId, so start with the sink. ";
+  if (!server && sink) return "src/server.ts never mentions com.pipelock/mediation, so start with the server. ";
+  if (!server && !sink) return "Neither file mentions it yet. ";
+  return "";
 }
 
 export async function checkStep6(): Promise<CheckResult> {
@@ -97,8 +109,10 @@ export async function checkStep6(): Promise<CheckResult> {
   }
   if (joined.serverWithId === 0) {
     return fail(
-      "your server's receipts don't record Pipelock's id, so the two chains can't be joined. " +
-        "Read it from the request's _meta and pass it to the guard: \"What to build\", item 3, in steps/6-pipelock.md",
+      "your server's receipts don't record Pipelock's id, so the two chains can't be joined. It takes two things: " +
+        "src/server.ts reads the id from the request's _meta and passes it to the guard, and your sink in " +
+        "src/receipts.ts records entry.correlationId in the receipt (createReceipt's correlationId). " +
+        `${whereToLook()}"What to build", item 3, in steps/6-pipelock.md has both`,
     );
   }
   const sms = joined.rows.find((r) => r.proxy.tool === "blast_promo_sms" && r.server);
