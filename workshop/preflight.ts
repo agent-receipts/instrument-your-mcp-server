@@ -3,13 +3,14 @@
 // Run this before the workshop. It checks your Node version, that
 // npm install worked, and that the ice cream truck starts and answers.
 
+import { paint } from "./lib/colour.js";
 import { MIN_NODE, nodeSupported } from "./lib/node.js";
 import { ROOT, serverSpawn } from "./lib/paths.js";
 
 let failed = false;
 
 function report(ok: boolean, what: string, fix?: string): void {
-  console.log(`${ok ? "ok  " : "FAIL"}  ${what}`);
+  console.log(`${ok ? paint("green", "ok  ") : paint(["red", "bold"], "FAIL")}  ${what}`);
   if (!ok) {
     failed = true;
     if (fix) console.log(`      ${fix.split("\n").join("\n      ")}`);
@@ -57,7 +58,7 @@ async function main(): Promise<void> {
     }
   }
 
-  console.log(failed ? "\nFix the FAIL lines above, then run npm run preflight again." : "\nYou're ready.");
+  console.log(failed ? "\nFix the FAIL lines above, then run npm run preflight again." : `\n${paint("green", "You're ready.")}`);
   process.exit(failed ? 1 : 0);
 }
 
