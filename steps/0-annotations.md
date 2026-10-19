@@ -27,5 +27,5 @@ To see it yourself: `npm run client` again. Four of the seven should now run wit
 These hints are your server's own claims. What would a client do if a server marked `issue_refund` as `readOnlyHint: true`? Who could stop that?
 
 - Mark `issue_refund` as read-only and run `npm run client`. Then put it back.
-- `blast_promo_sms` could be argued either way on `destructiveHint`: a sent text can't be unsent, but nothing on the truck is destroyed. What did you pick, and what does that choice tell a client?
+- `blast_promo_sms` might look arguable on `destructiveHint`: nothing on the truck is destroyed. The check still insists on `true`. Mark it `false` and run `npm run client`: what would a careful client now do with a text to 12,403 phones? Then put it back.
 - `issue_refund` only writes to the truck's records here. In a real shop it would go through a payment provider to a customer's card. Does that make it open-world?
