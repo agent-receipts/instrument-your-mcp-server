@@ -252,10 +252,9 @@ they're supposed to.
 | Make `callerId()` return a constant, then run two clients | one caller spends everyone's budget, and the audit log can't say who did what |
 | Stub `approvalCallback` to always approve | the tool call goes through exactly as before, and the trail now records a human decision that never happened — evidence made worse, not better |
 | Make the `PolicyRuntime` throw | the guard fails **closed** (`stage: "error"`), because a check that broke is not a check that passed |
-| Return a `transform` from the policy | refused rather than silently applied — the return type has nowhere to put a rewrite |
 | Reword the supplier's note so it avoids the scanner's phrases | it reaches the model. Pattern-matching injection is a tripwire, not a defence |
 
-The last two are the fail-closed design being deliberately provoked. The
+Making the policy throw provokes the fail-closed design on purpose. The
 middle ones are the more uncomfortable lesson: the instrumentation can be
 correct and still not protect you, if you got the key distribution or the
 caller identity wrong.
@@ -299,14 +298,11 @@ request, rather than taking an untrusted caller's word for what it did.
 
 - Two checks, not one — request-side and response-side, independently.
 - A staged pipeline where every decision carries the stage that produced it
-  (`deny_list`, `builtin_pattern`, `runtime`, `approval_pending`,
+  (`deny_list`, `runtime`, `approval_pending`,
   `rate_limit`, ...), not just a bare allow/deny.
 - Fail-closed at each pluggable call site — the policy runtime, the approval
   callback, and the response scanner each get their own try/catch, rather
   than one blanket catch at the top.
-- A policy "transform" (rewritten arguments) is refused rather than silently
-  collapsed into allow/deny, because this check's return type has nowhere to
-  put a rewrite.
 - Redaction happens at the point of persisting an audit entry, not at the
   point of deciding — policy evaluation always sees raw params.
 - Sanitization doesn't trust itself: after `sanitize()` runs, the guard
@@ -394,12 +390,10 @@ npm run walkthrough
 
 `examples/guard-walkthrough.ts` exercises the guard on its own — no MCP
 server, no transport. It wires a toy `PolicyRuntime` and `ResponseScanner`
-and walks the request-side stages (deny-list, dangerous-parameter pattern,
-policy denial, transform refusal, rate limit) and the response-side ones
-(clean response, a hard-blocked PII leak, a credential leak the toy sanitizer
-fails to actually remove — caught by the rescan-after-sanitize check rather
-than by trusting the sanitizer's own report — and a genuinely sanitizable
-prompt-injection tag).
+and walks the request-side stages (deny-list, policy denial, approval, rate
+limit) and the response-side ones (a clean response, a credential leak the
+toy sanitizer leaves in, caught by the rescan after sanitizing, and a
+prompt-injection tag it does remove).
 
 This file is also the template for testing the guard in your own repo: it's
 plain function calls with injected fakes, no process to mock.
