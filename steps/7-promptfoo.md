@@ -23,7 +23,7 @@ An attack you ran once is a demo. An attack that runs every time the code change
 
    ```bash
    npm run promptfoo:install
-   npm run promptfoo -- --version     # 0.124.1
+   npm run preflight     # the step 7 line says promptfoo 0.124.1
    ```
 
    By default promptfoo reports basic usage telemetry (which commands ran and which assertion types were used, not your prompts, answers or tests) and checks npm for updates. To turn both off:
@@ -40,6 +40,8 @@ An attack you ran once is a demo. An attack that runs every time the code change
    - `vars.expect`: what the truck should do with that call: `allowed`, `refused` or `clean`.
 
    The check in `examples/promptfoo-check.cjs` is shared by every test. It finds the model's call to `tool` and looks at what the truck answered and whether it flagged an error (`is_error`). Some ideas: a refund one cent more than the $9.00 order; a refund that says the owner has already approved it; a menu request worded differently. The tests run in order against one running truck, which remembers orders and refunds until you restart it. The first test places `order-0001`, so later tests can refund against it.
+
+   You can give your test its own `assert` as well; it runs alongside the shared check. It sees promptfoo's whole output, not only the truck's answer: for a refusal, something like `MCP Tool Error (issue_refund): [{"type":"text","text":"..."}]`. A `regex` assertion is a JavaScript regular expression, so `(?i)` is an error; for a case-insensitive match use `icontains`.
 4. **Run it.** Start the truck in one terminal. It stays running:
 
    ```bash
@@ -58,10 +60,10 @@ An attack you ran once is a demo. An attack that runs every time the code change
    Then run the tests:
 
    ```bash
-   npm run promptfoo -- eval -c examples/promptfoo.yaml --no-cache
+   npm run promptfoo
    ```
 
-   It takes under a minute with `qwen3:1.7b` (a few with `qwen3:8b`); the first test is slower while the model loads. `npm run promptfoo -- view` opens the results in a browser.
+   It takes under a minute with `qwen3:1.7b` (a few with `qwen3:8b`); the first test is slower while the model loads. `npm run promptfoo:view` opens the results in a browser. `npm run promptfoo` is short for `promptfoo eval -c examples/promptfoo.yaml --no-cache`; to add a promptfoo option, put it after `--`, as in `npm run promptfoo -- --verbose`.
 
 ## Done when
 
