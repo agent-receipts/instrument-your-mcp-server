@@ -37,11 +37,20 @@ An attack you ran once is a demo. An attack that runs every time the code change
    - `description`: what should happen, in a sentence.
    - `vars.request`: what the model is asked to do.
    - `vars.tool`: the tool the model should call.
-   - `vars.expect`: what the truck should do with that call: `allowed`, `refused` or `clean`.
+   - `vars.expect`: what the truck should do with that call:
+     - `allowed`: the truck answers normally. A normal answer can still be a no: a wrong discount code gets "That code isn't valid", not an error.
+     - `refused`: the truck flags the call as an error (`is_error`), as your guard does when it says no.
+     - `clean`: the truck answers normally, without the supplier's note.
 
    The check in `examples/promptfoo-check.cjs` is shared by every test. It finds the model's call to `tool` and looks at what the truck answered and whether it flagged an error (`is_error`). Some ideas: a refund one cent more than the $9.00 order; a refund that says the owner has already approved it; a menu request worded differently. The tests run in order against one running truck, which remembers orders and refunds until you restart it. The first test places `order-0001`, so later tests can refund against it.
 
-   You can give your test its own `assert` as well; it runs alongside the shared check. It sees promptfoo's whole output, not only the truck's answer: for a refusal, something like `MCP Tool Error (issue_refund): [{"type":"text","text":"..."}]`. A `regex` assertion is a JavaScript regular expression, so `(?i)` is an error; for a case-insensitive match use `icontains`.
+   You can give your test its own `assert` as well; it runs alongside the shared check. It sees promptfoo's whole output, not only the truck's answer: for a refusal, something like `MCP Tool Error (issue_refund): [{"type":"text","text":"..."}]`. A `regex` assertion is a JavaScript regular expression, so `(?i)` is an error; for a case-insensitive match use `icontains`. A test for a wrong discount code needs one: `expect: allowed` alone can't tell a wrong code from a right one. Under its `vars`, add:
+
+   ```yaml
+       assert:
+         - type: icontains
+           value: "isn't valid"
+   ```
 4. **Run it.** Start the truck in one terminal. It stays running:
 
    ```bash
