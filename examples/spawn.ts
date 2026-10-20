@@ -24,6 +24,12 @@ export interface Spawn {
   proxy?: { command: string; args: string[] };
 }
 
+// `npx tsx <file>`, run as `node --import tsx <file>` instead. On Windows npx
+// is npx.cmd, which child_process.spawn won't run without a shell.
+function tsx(args: string[]): Pick<Spawn, "command" | "args"> {
+  return { command: process.execPath, args: ["--import", "tsx", ...args] };
+}
+
 export function spawnFromArgv(argv: string[], fallback = "src/server.ts"): Spawn {
   const via = argv.indexOf("--via");
   if (via !== -1) {
@@ -37,13 +43,13 @@ export function spawnFromArgv(argv: string[], fallback = "src/server.ts"): Spawn
           "--via pipelock mcp proxy --config stacking/pipelock.yaml -- npx tsx solution/server.ts",
       );
     }
+    const viaNpx = server[0] === "npx" && server[1] === "tsx";
     return {
-      command: server[0],
-      args: server.slice(1),
+      ...(viaNpx ? tsx(server.slice(2)) : { command: server[0], args: server.slice(1) }),
       label: rest.join(" "),
       proxy: { command: proxy[0], args: proxy.slice(1) },
     };
   }
   const target = argv.find((a) => a.endsWith(".ts")) ?? fallback;
-  return { command: "npx", args: ["tsx", target], label: target };
+  return { ...tsx([target]), label: target };
 }
