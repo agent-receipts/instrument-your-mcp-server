@@ -44,4 +44,4 @@ To see it yourself: `npm run hammer`. It should stop after 30 guesses.
 
 Your limit is per caller. Who decides who the caller is, and what happens to the limit if that answer is wrong?
 
-`callerId()` in `src/server.ts` reads the caller from the OAuth token, so every client that registers is a caller of its own. Change it to return a random id each time, and run the hammer again. What happened to the limit? And if it returned one constant for everyone, what would two clients do to each other? Then put `callerId()` back as it was: the later checks run the hammer again.
+`callerId()` in `src/server.ts` reads the caller from the OAuth token, so every client that registers is a caller of its own. The token's `AuthInfo` holds a `clientId` and scopes, and no user or email: here the caller is a client, not a person. Registration is open, and `examples/connect.ts` registers a new client on every run. Change it to return a random id each time, and run the hammer again. What happened to the limit? And if it returned one constant for everyone, what would two clients do to each other? Then put `callerId()` back as it was: the later checks run the hammer again.

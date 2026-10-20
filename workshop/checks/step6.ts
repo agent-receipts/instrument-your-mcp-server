@@ -54,7 +54,7 @@ export async function checkStep6(): Promise<CheckResult> {
   if (!existsSync(at(KEY))) {
     return fail(
       `Pipelock ${installed} is installed, but its signing key isn't set up yet. From this folder, run:\n` +
-        "  pipelock keygen scoop-mediator --keystore stacking/plhome",
+        "  npm run pipelock:key",
     );
   }
 
