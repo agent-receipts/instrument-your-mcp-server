@@ -271,6 +271,7 @@ export function checkPromptfooYaml(yaml: string, load: YamlLoad | null = promptf
   const list = added.map((t) => `"${t.description}" (${t.tool}, ${t.expect})`).join(", ");
   return pass(
     `${added.length} test(s) of your own: ${list}.\n` +
-      "This only reads the file; it doesn't run a model. To run the tests: item 4 in steps/7-promptfoo.md",
+      "That's the file checked, not the tests: this doesn't run a model, so it can't tell you whether yours passes.\n" +
+      "To run the tests: item 4 in steps/7-promptfoo.md",
   );
 }

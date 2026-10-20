@@ -26,10 +26,10 @@ You don't change the truck, unless item 3 says so. You put Pipelock in front of 
 2. Give Pipelock a signing key of its own:
 
    ```bash
-   pipelock keygen scoop-mediator --keystore stacking/plhome
+   npm run pipelock:key
    ```
 
-   The key is made on your machine and stays there. `stacking/pipelock.yaml` points at it, and `.gitignore` keeps it out of git. Don't commit it.
+   That runs `pipelock keygen scoop-mediator --keystore stacking/plhome`, so the key lands where the config looks for it. The key is made on your machine and stays there. `stacking/pipelock.yaml` points at it, and `.gitignore` keeps it out of git. Don't commit it.
 3. Check that your server records Pipelock's id for each call. Pipelock writes the id of its own receipt into the request's `_meta`. Your server reads it there and passes it to the guard, and your receipt sink records it in the receipt as the correlation id. That is what lets the two chains be joined, and it takes both: if you used `npm run catchup 4` or `5`, both are already done, so go to item 4. If not, check each.
 
    First, the server. Search `src/server.ts` for `com.pipelock/mediation`. If it's not there, add this function to `src/server.ts`, just below `callerId()` (so `callerId()` keeps its own comment):
