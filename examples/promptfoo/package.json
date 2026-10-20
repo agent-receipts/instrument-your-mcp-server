@@ -23,5 +23,9 @@
     "@googleapis/sheets": "file:./stub",
     "@modelcontextprotocol/server-filesystem": "file:./stub"
   },
-  "description": "promptfoo for step 7, without the large optional packages it doesn't need here (about 300 MB instead of 2 GB)."
+  "description": "promptfoo for step 7, without the large optional packages it doesn't need here (about 300 MB instead of 2 GB).",
+  "allowScripts": {
+    "esbuild": true,
+    "fsevents": true
+  }
 }
