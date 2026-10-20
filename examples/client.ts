@@ -9,6 +9,7 @@
 //   npm run client                          # your server
 //   npm run client -- solution/server.ts    # the finished one
 
+import { pathToFileURL } from "node:url";
 import { withClient } from "./attacks.js";
 import { spawnFromArgv } from "./spawn.js";
 
@@ -41,7 +42,7 @@ async function main(): Promise<void> {
   console.log(`\n${tools.length - asks} of ${tools.length} tools run without asking.`);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((err: unknown) => {
     console.error(err);
     process.exit(1);
