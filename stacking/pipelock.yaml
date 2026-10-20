@@ -6,7 +6,7 @@
 #
 # Setup (once, from the project folder). This makes a key of your own; it's
 # gitignored and must never be committed:
-#   pipelock keygen scoop-mediator --keystore stacking/plhome
+#   npm run pipelock:key     # pipelock keygen scoop-mediator --keystore stacking/plhome
 #
 # Run the stack. The demo script starts the server, then pipelock with
 # `--listen 127.0.0.1:<port> --upstream <server url>` appended, and connects
@@ -53,9 +53,10 @@ flight_recorder:
 
 # Note on what this config does NOT turn on:
 #
-#   - Pipelock's own per-agent budgets (denial-of-wallet). They are off by
-#     default, which is why `npm run hammer` through this stack is still
-#     stopped by the SERVER's rate limit at 30, not by the proxy.
+#   - Pipelock's own call budgets (denial-of-wallet). They are off by
+#     default. The free one is `agents._default.budget`, and it applies to
+#     MCP tool calls. Before you turn it on, step 6's last question is worth
+#     answering: what would it count calls against?
 #   - Request redaction (rewriting secrets to <pl:...> placeholders before
 #     forwarding). Leaving it off matters for the exercise: with it on, the
 #     server receives rewritten arguments and commits its receipt to those,

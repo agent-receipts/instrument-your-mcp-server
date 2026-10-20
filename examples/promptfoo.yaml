@@ -3,7 +3,7 @@
 #   npm run server                             # terminal 1: the truck
 #   export TRUCK_TOKEN=$(npm run -s token)     # terminal 2 (PowerShell: $env:TRUCK_TOKEN = npm run -s token)
 #   npm run promptfoo:install                  # once: promptfoo itself, about 300 MB
-#   npm run promptfoo -- eval -c examples/promptfoo.yaml --no-cache
+#   npm run promptfoo                          # the eval: promptfoo eval -c examples/promptfoo.yaml --no-cache
 #
 # Check Ollama is running first: `ollama list` should answer, or open
 # http://localhost:11434 in a browser. Without it, every test fails with
